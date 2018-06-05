@@ -1,5 +1,41 @@
 # CHANGE LOG
 
+## 1.7.0
+
+### FEATURES
+- [Click & Conversion analytics](https://www.algolia.com/doc/guides/analytics/click-analytics/) support (#435, #468, #486, #498) - [Documentation](https://community.algolia.com/magento/doc/m2/click-analytics/)
+- Option to automatically create ["facet" query rules](https://www.algolia.com/doc/guides/query-rules/query-rules-overview/?language=php#dynamic-facets--filters) (#438)
+- Extension now supports upcoming Algolia's A/B testing feature (#492)
+
+### UPDATES
+- Frontend event hooks mechanism was refactored to support multi event listeners (#437) - [Documentation](https://community.algolia.com/magento/doc/m2/frontend-events/)
+- Refactoring of code to be more robust and reliable (#436)
+- Product is updated in Algolia on it's stock status update (#443)
+- Product thumbnail size is now configurable via `etc/view.xml` file (#448)
+- `SKU`, `name`, `description` products' attributes are not casted from string (#483)
+- Parent product of update child product is now always reindexed (#482)
+- `EMPTY_QUEUE` constant name was replaced by more descriptive `PROCESS_FULL_QUEUE` name (#491)
+- Refactored `CategoryHelper` to remove memory leak (#495)
+- Expired special prices are now replaced by default prices even without reindex (#499)
+- [InstantSearch.js library](https://community.algolia.com/instantsearch.js/) was updated to it's latest version bringing [routing feature](https://community.algolia.com/instantsearch.js/v2/guides/routing.html) to the extension (#500)
+- Added link to Algolia configuration directly to "Stores" panel (#501)
+
+### FIXES
+- Extension now correctly removes disable products from Algolia (#447)
+- Fixed the issue when some records weren't indexed because of too big previous record (#451)
+- Fixed issue when product was not added to cart on first attempt after page load (#460)
+- Removed filenames with asterisks which prevented the extension from being installed on Windows (#461)
+- Fixed issue which fetched from DB not relevant sub products (#462)
+- Fix issues with wrong category names (#467)
+- Fixed issue when backend rendering was prevented not only on category pages (#471)
+- Pages from disabled stores are not indexed anymore (#475)
+- Fixed image types IDs to configure image sizes via `etc/view.xml` file (#478)
+- Fixed exploding of line breaks on User Agents setting for Prevent backend rendering feature to work on Windows servers (#479)
+- Correct default values for query suggestions (#484)
+- TMP index is now not removed with not used replica indices (#488)
+- Fixed documentation links (#490)
+- Fixed issue which overrode instant search search parameters (#501)
+
 ## 1.6.0
 
 ### FEATURES
