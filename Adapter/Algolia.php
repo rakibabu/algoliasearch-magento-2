@@ -112,8 +112,8 @@ class Algolia implements AdapterInterface
 
         if ($this->isAllowed($storeId)
             && ($this->isSearch() ||
-            $this->isReplaceCategory($storeId) ||
-            $this->isReplaceAdvancedSearch($storeId))
+                $this->isReplaceCategory($storeId) ||
+                $this->isReplaceAdvancedSearch($storeId))
         ) {
             try {
                 $algoliaQuery = $query !== '__empty__' ? $query : '';
