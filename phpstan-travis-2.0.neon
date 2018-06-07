@@ -11,4 +11,4 @@ parameters:
 		- '#Parameter \$resultJsonFactory of method Algolia\\AlgoliaSearch\\Controller\\Adminhtml\\Queue::\_\_construct\(\) has invalid typehint type Magento\\Framework\\Controller\\Result\\JsonFactory.#' # class doesn't officialy exists in Magento 2.0.x
 		- '#Call to an undefined method Magento\\Framework\\DataObject::setTypeId\(\).#'
 		- '#Parameter \#1 \$product of method Magento\\Catalog\\Model\\Product\\Type::factory\(\) expects Magento\\Catalog\\Model\\Product, Magento\\Framework\\DataObject given.#'
-		- '#Method Magento\\Framework\\Search\\Adapter\\Mysql\\Aggregation\\Builder::build() invoked with 3 parameters, 2 required.#'
+		- '#Method Magento\\Framework\\Search\\Adapter\\Mysql\\Aggregation\\Builder::build\(\) invoked with 3 parameters, 2 required.#'
