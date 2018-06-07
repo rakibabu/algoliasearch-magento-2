@@ -110,6 +110,7 @@ class Algolia implements AdapterInterface
 
         $documents = [];
         $table = null;
+        $useNative = false;
 
         if ($this->isAllowed($storeId)
             && ($this->isSearch() ||
@@ -138,12 +139,14 @@ class Algolia implements AdapterInterface
                 $table = $temporaryStorage->{$storeDocumentsMethod}($apiDocuments);
 
             } catch (AlgoliaConnectionException $e) {
-                $query = $this->mapper->buildQuery($request);
-                $table = $temporaryStorage->storeDocumentsFromSelect($query);
-                $documents = $this->getDocuments($table);
+                $useNative = true;
             }
 
         } else {
+            $useNative = true;
+        }
+
+        if ($useNative) {
             $query = $this->mapper->buildQuery($request);
             $table = $temporaryStorage->storeDocumentsFromSelect($query);
             $documents = $this->getDocuments($table);
