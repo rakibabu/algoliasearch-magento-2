@@ -103,12 +103,12 @@ class Algolia implements AdapterInterface
      */
     public function query(RequestInterface $request)
     {
-        $useNative        = false;
-        $storeId          = $this->storeManager->getStore()->getId();
-        $query            = $this->catalogSearchHelper->getEscapedQueryText();
+        $useNative = false;
+        $storeId = $this->storeManager->getStore()->getId();
+        $query = $this->catalogSearchHelper->getEscapedQueryText();
         $temporaryStorage = $this->temporaryStorageFactory->create();
-        $documents        = [];
-        $table            = null;
+        $documents = [];
+        $table = null;
 
         if ($this->isAllowed($storeId)
             && ($this->isSearch() ||
@@ -123,7 +123,7 @@ class Algolia implements AdapterInterface
                     $documents = $this->algoliaHelper->getSearchResult($algoliaQuery, $storeId);
                 }
 
-                $getDocumentMethod    = $this->getGetDocumentMethod();
+                $getDocumentMethod = $this->getGetDocumentMethod();
                 $storeDocumentsMethod = $this->getStoreDocumentMethod();
 
                 $apiDocuments = array_map(function ($document) use ($getDocumentMethod) {
@@ -141,12 +141,12 @@ class Algolia implements AdapterInterface
 
         if ($useNative) {
             $nativeQueryData = $this->getNativeQueryData($request);
-            $documents       = $nativeQueryData['documents'];
-            $table           = $nativeQueryData['table'];
+            $documents = $nativeQueryData['documents'];
+            $table = $nativeQueryData['table'];
         }
 
         $response = [
-            'documents'    => $documents,
+            'documents' => $documents,
             'aggregations' => $this->getAggregations($request, $table, $documents),
         ];
 
@@ -162,14 +162,14 @@ class Algolia implements AdapterInterface
      */
     public function getNativeQueryData($request)
     {
-        $query            = $this->mapper->buildQuery($request);
+        $query  = $this->mapper->buildQuery($request);
         $temporaryStorage = $this->temporaryStorageFactory->create();
-        $table            = $temporaryStorage->storeDocumentsFromSelect($query);
-        $documents        = $this->getDocuments($table);
+        $table = $temporaryStorage->storeDocumentsFromSelect($query);
+        $documents = $this->getDocuments($table);
 
         return [
             'documents' => $documents,
-            'table'     => $table
+            'table' => $table
         ];
     }
 
