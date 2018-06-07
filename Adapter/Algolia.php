@@ -2,6 +2,7 @@
 
 namespace Algolia\AlgoliaSearch\Adapter;
 
+use AlgoliaSearch\AlgoliaConnectionException;
 use Algolia\AlgoliaSearch\Helper\ConfigHelper;
 use Algolia\AlgoliaSearch\Helper\Data as AlgoliaHelper;
 use Magento\CatalogSearch\Helper\Data;
@@ -115,32 +116,44 @@ class Algolia implements AdapterInterface
                 $this->isReplaceCategory($storeId) ||
                 $this->isReplaceAdvancedSearch($storeId))
         ) {
-            $algoliaQuery = $query !== '__empty__' ? $query : '';
+            try {
+                $algoliaQuery = $query !== '__empty__' ? $query : '';
 
-            // If instant search is on, do not make a search query unless SEO request is set to 'Yes'
-            if (!$this->config->isInstantEnabled($storeId) || $this->config->makeSeoRequest($storeId)) {
-                $documents = $this->algoliaHelper->getSearchResult($algoliaQuery, $storeId);
+                // If instant search is on, do not make a search query unless SEO request is set to 'Yes'
+                if (!$this->config->isInstantEnabled($storeId) || $this->config->makeSeoRequest($storeId)) {
+                    $documents = $this->algoliaHelper->getSearchResult($algoliaQuery, $storeId);
+                }
+
+                $getDocumentMethod = 'getDocument21';
+                $storeDocumentsMethod = 'storeApiDocuments';
+                if (version_compare($this->config->getMagentoVersion(), '2.1.0', '<') === true) {
+                    $getDocumentMethod = 'getDocument20';
+                    $storeDocumentsMethod = 'storeDocuments';
+                }
+
+                $apiDocuments = array_map(function ($document) use ($getDocumentMethod) {
+                    return $this->{$getDocumentMethod}($document);
+                }, $documents);
+
+                $table = $temporaryStorage->{$storeDocumentsMethod}($apiDocuments);
+
+            } catch (AlgoliaConnectionException $e) {
+                $query = $this->mapper->buildQuery($request);
+                $table = $temporaryStorage->storeDocumentsFromSelect($query);
+                $documents = $this->getDocuments($table);
             }
 
-            $getDocumentMethod = 'getDocument21';
-            $storeDocumentsMethod = 'storeApiDocuments';
-            if (version_compare($this->config->getMagentoVersion(), '2.1.0', '<') === true) {
-                $getDocumentMethod = 'getDocument20';
-                $storeDocumentsMethod = 'storeDocuments';
-            }
-
-            $apiDocuments = array_map(function ($document) use ($getDocumentMethod) {
-                return $this->{$getDocumentMethod}($document);
-            }, $documents);
-
-            $table = $temporaryStorage->{$storeDocumentsMethod}($apiDocuments);
         } else {
             $query = $this->mapper->buildQuery($request);
             $table = $temporaryStorage->storeDocumentsFromSelect($query);
             $documents = $this->getDocuments($table);
         }
 
-        $aggregations = $this->aggregationBuilder->build($request, $table);
+        if (version_compare($this->config->getMagentoVersion(), '2.1.0', '<') === true) {
+            $aggregations = $this->aggregationBuilder->build($request, $table);
+        } else {
+            $aggregations = $this->aggregationBuilder->build($request, $table, $documents);
+        }
 
         $response = [
             'documents'    => $documents,
