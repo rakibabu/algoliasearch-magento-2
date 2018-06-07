@@ -19,7 +19,7 @@ use Magento\Framework\Search\RequestInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
- * MySQL Search Adapter
+ * Algolia Search Adapter
  */
 class Algolia implements AdapterInterface
 {
@@ -103,19 +103,17 @@ class Algolia implements AdapterInterface
      */
     public function query(RequestInterface $request)
     {
-        $query = $this->catalogSearchHelper->getEscapedQueryText();
-
-        $storeId = $this->storeManager->getStore()->getId();
+        $useNative        = false;
+        $storeId          = $this->storeManager->getStore()->getId();
+        $query            = $this->catalogSearchHelper->getEscapedQueryText();
         $temporaryStorage = $this->temporaryStorageFactory->create();
-
-        $documents = [];
-        $table = null;
-        $useNative = false;
+        $documents        = [];
+        $table            = null;
 
         if ($this->isAllowed($storeId)
             && ($this->isSearch() ||
-                $this->isReplaceCategory($storeId) ||
-                $this->isReplaceAdvancedSearch($storeId))
+            $this->isReplaceCategory($storeId) ||
+            $this->isReplaceAdvancedSearch($storeId))
         ) {
             try {
                 $algoliaQuery = $query !== '__empty__' ? $query : '';
@@ -125,12 +123,8 @@ class Algolia implements AdapterInterface
                     $documents = $this->algoliaHelper->getSearchResult($algoliaQuery, $storeId);
                 }
 
-                $getDocumentMethod = 'getDocument21';
-                $storeDocumentsMethod = 'storeApiDocuments';
-                if (version_compare($this->config->getMagentoVersion(), '2.1.0', '<') === true) {
-                    $getDocumentMethod = 'getDocument20';
-                    $storeDocumentsMethod = 'storeDocuments';
-                }
+                $getDocumentMethod    = $this->getGetDocumentMethod();
+                $storeDocumentsMethod = $this->getStoreDocumentMethod();
 
                 $apiDocuments = array_map(function ($document) use ($getDocumentMethod) {
                     return $this->{$getDocumentMethod}($document);
@@ -141,29 +135,42 @@ class Algolia implements AdapterInterface
             } catch (AlgoliaConnectionException $e) {
                 $useNative = true;
             }
-
         } else {
             $useNative = true;
         }
 
         if ($useNative) {
-            $query = $this->mapper->buildQuery($request);
-            $table = $temporaryStorage->storeDocumentsFromSelect($query);
-            $documents = $this->getDocuments($table);
-        }
-
-        if (version_compare($this->config->getMagentoVersion(), '2.1.0', '<') === true) {
-            $aggregations = $this->aggregationBuilder->build($request, $table);
-        } else {
-            $aggregations = $this->aggregationBuilder->build($request, $table, $documents);
+            $nativeQueryData = $this->getNativeQueryData($request);
+            $documents       = $nativeQueryData['documents'];
+            $table           = $nativeQueryData['table'];
         }
 
         $response = [
             'documents'    => $documents,
-            'aggregations' => $aggregations,
+            'aggregations' => $this->getAggregations($request, $table, $documents),
         ];
 
         return $this->responseFactory->create($response);
+    }
+
+    /**
+     * Get native query documents
+     *
+     * @param  RequestInterface $request
+     *
+     * @return array
+     */
+    public function getNativeQueryData($request)
+    {
+        $query            = $this->mapper->buildQuery($request);
+        $temporaryStorage = $this->temporaryStorageFactory->create();
+        $table            = $temporaryStorage->storeDocumentsFromSelect($query);
+        $documents        = $this->getDocuments($table);
+
+        return [
+            'documents' => $documents,
+            'table'     => $table
+        ];
     }
 
     /**
@@ -181,6 +188,44 @@ class Algolia implements AdapterInterface
             && $this->config->isEnabledFrontEnd($storeId)
             && $this->config->makeSeoRequest($storeId)
         );
+    }
+
+    /**
+     * Get aggregations
+     *
+     * @param  RequestInterface $request
+     * @param  Table            $table
+     * @param  array            $documents
+     *
+     * @return array
+     */
+    private function getAggregations($request, $table, $documents)
+    {
+        if (version_compare($this->config->getMagentoVersion(), '2.1.0', '<') === true) {
+            return $this->aggregationBuilder->build($request, $table);
+        }
+
+        return $this->aggregationBuilder->build($request, $table, $documents);
+    }
+
+    /** @return string */
+    private function getGetDocumentMethod()
+    {
+        if (version_compare($this->config->getMagentoVersion(), '2.1.0', '<') === true) {
+            return 'getDocument20';
+        }
+
+        return 'getDocument21';
+    }
+
+    /** @return string */
+    private function getStoreDocumentMethod()
+    {
+        if (version_compare($this->config->getMagentoVersion(), '2.1.0', '<') === true) {
+            return 'storeDocuments';
+        }
+
+        return 'storeApiDocuments';
     }
 
     /** @return boolean */
