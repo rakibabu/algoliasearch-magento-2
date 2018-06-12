@@ -92,6 +92,7 @@ class ConfigHelper
         'algoliasearch_advanced/advanced/prevent_backend_rendering_display_mode';
     const BACKEND_RENDERING_ALLOWED_USER_AGENTS =
         'algoliasearch_advanced/advanced/backend_rendering_allowed_user_agents';
+    const NON_CASTABLE_ATTRIBUTES = 'algoliasearch_advanced/advanced/non_castable_attributes';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
 
@@ -893,6 +894,25 @@ class ConfigHelper
                 $storeId
             ),
         ];
+    }
+
+    public function getNonCastableAttributes($storeId = null)
+    {
+        $nonCastableAttributes = [];
+
+        $config = $this->unserialize($this->configInterface->getValue(
+            self::NON_CASTABLE_ATTRIBUTES,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ));
+
+        foreach ($config as $attributeData) {
+            if (isset($attributeData['attribute'])) {
+                $nonCastableAttributes[] = $attributeData['attribute'];
+            }
+        }
+
+        return $nonCastableAttributes;
     }
   
     private function addIndexableAttributes(
