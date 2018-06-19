@@ -906,9 +906,11 @@ class ConfigHelper
             $storeId
         ));
 
-        foreach ($config as $attributeData) {
-            if (isset($attributeData['attribute'])) {
-                $nonCastableAttributes[] = $attributeData['attribute'];
+        if (is_array($config)) {
+            foreach ($config as $attributeData) {
+                if (isset($attributeData['attribute'])) {
+                    $nonCastableAttributes[] = $attributeData['attribute'];
+                }
             }
         }
 
