@@ -24,6 +24,12 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Simple as PriceManagerSimple;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Virtual as PriceManagerVirtual;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Downloadable as PriceManagerDownloadable;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Configurable as PriceManagerConfigurable;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Bundle as PriceManagerBundle;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Grouped as PriceManagerGrouped;
 
 class ProductHelper
 {
@@ -40,6 +46,14 @@ class ProductHelper
     private $currencyManager;
     private $categoryHelper;
     private $priceManager;
+
+    private $priceManagerSimple;
+    private $priceManagerVirtual;
+    private $priceManagerDownloadable;
+    private $priceManagerConfigurable;
+    private $priceManagerBundle;
+    private $priceManagerGrouped;
+
     private $imageHelper;
 
     /**
@@ -89,6 +103,12 @@ class ProductHelper
         CurrencyHelper $currencyManager,
         CategoryHelper $categoryHelper,
         PriceManager $priceManager,
+        PriceManagerSimple $priceManagerSimple,
+        PriceManagerVirtual $priceManagerVirtual,
+        PriceManagerDownloadable $priceManagerDownloadable,
+        PriceManagerConfigurable $priceManagerConfigurable,
+        PriceManagerBundle $priceManagerBundle,
+        PriceManagerGrouped $priceManagerGrouped,
         Type $productType
     ) {
         $this->eavConfig = $eavConfig;
@@ -104,6 +124,12 @@ class ProductHelper
         $this->currencyManager = $currencyManager;
         $this->categoryHelper = $categoryHelper;
         $this->priceManager = $priceManager;
+        $this->priceManagerSimple = $priceManagerSimple;
+        $this->priceManagerVirtual = $priceManagerVirtual;
+        $this->priceManagerDownloadable = $priceManagerDownloadable;
+        $this->priceManagerConfigurable = $priceManagerConfigurable;
+        $this->priceManagerBundle = $priceManagerBundle;
+        $this->priceManagerGrouped = $priceManagerGrouped;
         $this->productType = $productType;
 
         $this->imageHelper = $this->objectManager->create(
@@ -436,7 +462,15 @@ class ProductHelper
 
         $customData = $this->addAdditionalAttributes($customData, $additionalAttributes, $product, $subProducts);
 
-        $customData = $this->priceManager->addPriceData($customData, $product, $subProducts);
+        // old beheviour
+//        $customData = $this->priceManager->addPriceData($customData, $product, $subProducts);
+
+        // new behaviour
+        $priceManager = 'priceManager' . ucfirst($product->getTypeId());
+        if (! $this->{$priceManager}) {
+            throw new \Exception('Unknown Product Type');
+        }
+        $customData = $this->{$priceManager}->addPriceData($customData, $product, $subProducts);
 
         $transport = new DataObject($customData);
         $this->eventManager->dispatch(

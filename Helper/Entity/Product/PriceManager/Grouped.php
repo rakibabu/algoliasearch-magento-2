@@ -2,4 +2,4 @@
 
 namespace Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager;
 
-class Simple extends ProductWithoutChildren {}
+class Grouped extends ProductWithChildren{}
