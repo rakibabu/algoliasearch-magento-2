@@ -442,7 +442,15 @@ class ProductHelper
 
         $customData = $this->addAdditionalAttributes($customData, $additionalAttributes, $product, $subProducts);
 
-        $customData = $this->priceManager->addPriceData($customData, $product, $subProducts);
+        // old beheviour
+//        $customData = $this->priceManager->addPriceData($customData, $product, $subProducts);
+
+        // new behaviour
+        $priceManager = 'priceManager' . ucfirst($product->getTypeId());
+        if (! $this->{$priceManager}) {
+            throw new \Exception('Unknown Product Type');
+        }
+        $customData = $this->{$priceManager}->addPriceData($customData, $product, $subProducts);
 
         $transport = new DataObject($customData);
         $this->eventManager->dispatch(
