@@ -6,14 +6,8 @@ use Magento\Catalog\Model\Product;
 
 class Bundle extends ProductWithChildren
 {
-    protected function getMinMaxPrices(
-        Product $product,
-        $withTax,
-        $subProducts,
-        $currencyCode
-    ) {
-        $type = $product->getTypeId();
-
+    protected function getMinMaxPrices(Product $product, $withTax, $subProducts, $currencyCode)
+    {
         $min = PHP_INT_MAX;
         $max = 0;
 
@@ -23,10 +17,10 @@ class Bundle extends ProductWithChildren
 
 
         if ($currencyCode !== $this->baseCurrencyCode) {
-            $min = $this->priceCurrency->convert($min, $this->store, $currencyCode);
+            $min = $this->convertPrice($min, $currencyCode);
 
             if ($min !== $max) {
-                $max = $this->priceCurrency->convert($max, $this->store, $currencyCode);
+                $max = $this->convertPrice($max, $currencyCode);
             }
         }
 

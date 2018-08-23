@@ -11,13 +11,12 @@ class Configurable extends ProductWithChildren
         $typeInstance = $product->getTypeInstance();
         $children = $typeInstance->getUsedProducts($product);
         foreach ($children as $child){
-            $childPrice = (double) $this->rule->getRulePrice(
+            $childrenPrices[] = (double) $this->rule->getRulePrice(
                 new \DateTime(),
                 $this->store->getWebsiteId(),
                 $groupId,
                 $child->getId()
             );
-            $childrenPrices[] = $childPrice;
         }
 
         return min($childrenPrices);
