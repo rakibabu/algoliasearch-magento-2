@@ -12,6 +12,7 @@ use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
 use Magento\Customer\Model\Group;
 use Magento\CatalogRule\Model\ResourceModel\Rule;
+use Magento\Customer\Api\Data\GroupInterface;
 
 abstract class ProductWithoutChildren
 {
@@ -76,6 +77,7 @@ abstract class ProductWithoutChildren
                 $this->customData[$field][$currencyCode]['default_formated'] = $this->formatPrice($price, $currencyCode);
 
                 $specialPrice = $this->getSpecialPrice($product, $currencyCode, $withTax);
+                $tierPrice = $this->getTierPrice($product, $currencyCode, $withTax);
 
                 if ($this->areCustomersGroupsEnabled) {
                     $this->addCustomerGroupsPrices($product, $currencyCode, $withTax, $field);
@@ -87,6 +89,7 @@ abstract class ProductWithoutChildren
                     strtotime($product->getSpecialToDate());
 
                 $this->addSpecialPrices($specialPrice, $field, $currencyCode);
+                $this->addTierPrices($tierPrice, $field, $currencyCode);
 
                 $this->addAdditionalData($product, $withTax, $subProducts, $currencyCode, $field);
             }
@@ -180,6 +183,53 @@ abstract class ProductWithoutChildren
         return $specialPrice;
     }
 
+    protected function getTierPrice(Product $product, $currencyCode, $withTax)
+    {
+        $tierPrice = [];
+        $tierPrices = [];
+
+        foreach($product->getTierPrices() as $productTierPrice) {
+
+            if (!isset($tierPrices[$productTierPrice->getCustomerGroupId()])) {
+                $tierPrices[$productTierPrice->getCustomerGroupId()] = (double) $productTierPrice->getValue();
+                continue;
+            }
+
+            $tierPrices[$productTierPrice->getCustomerGroupId()] = min(
+                $tierPrices[$productTierPrice->getCustomerGroupId()],
+                (double) $productTierPrice->getValue()
+            );
+        }
+
+        /** @var Group $group */
+        foreach ($this->groups as $group) {
+            $groupId = (int) $group->getData('customer_group_id');
+            $tierPrice[$groupId] = false;
+
+            $currentTierPrice = null;
+            if (!isset($tierPrices[$groupId]) && !isset($tierPrices[GroupInterface::CUST_GROUP_ALL])) {
+                continue;
+            }
+
+            if (isset($tierPrices[GroupInterface::CUST_GROUP_ALL])
+                && $tierPrices[GroupInterface::CUST_GROUP_ALL] !== []) {
+                $currentTierPrice = $tierPrices[GroupInterface::CUST_GROUP_ALL];
+            }
+
+            if (isset($tierPrices[$groupId]) && $tierPrices[$groupId] !== []) {
+                $currentTierPrice = min($currentTierPrice, $tierPrices[$groupId]);
+            }
+
+            if ($currencyCode !== $this->baseCurrencyCode) {
+                $tierPrices[$groupId] =
+                    $this->priceCurrency->round($this->convertPrice($currentTierPrice, $currencyCode));
+            }
+            $tierPrice[$groupId] = $this->getTaxPrice($product, $currentTierPrice, $withTax);
+        }
+
+        return $tierPrice;
+    }
+
     protected function getRulePrice($groupId, $product)
     {
         return (double) $this->rule->getRulePrice(
@@ -264,6 +314,31 @@ abstract class ProductWithoutChildren
             $this->customData[$field][$currencyCode]['default'] = $this->priceCurrency->round($specialPrice[0]);
             $this->customData[$field][$currencyCode]['default_formated'] =
                 $this->formatPrice($specialPrice[0], $currencyCode);
+        }
+    }
+
+    protected function addTierPrices($tierPrice, $field, $currencyCode)
+    {
+        if ($this->areCustomersGroupsEnabled) {
+            /** @var \Magento\Customer\Model\Group $group */
+            foreach ($this->groups as $group) {
+                $groupId = (int) $group->getData('customer_group_id');
+
+                if ($tierPrice[$groupId]) {
+                    $this->customData[$field][$currencyCode]['group_' . $groupId . '_tier'] = $tierPrice[$groupId];
+
+                    $this->customData[$field][$currencyCode]['group_' . $groupId . '_tier_formated'] =
+                        $this->formatPrice($tierPrice[$groupId], $currencyCode);
+                }
+            }
+
+            return;
+        }
+
+        if ($tierPrice[0]) {
+            $this->customData[$field][$currencyCode]['default_tier'] = $this->priceCurrency->round($tierPrice[0]);
+            $this->customData[$field][$currencyCode]['default_tier_formated'] =
+                $this->formatPrice($tierPrice[0], $currencyCode);
         }
     }
 }
