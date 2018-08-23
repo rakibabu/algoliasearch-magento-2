@@ -48,21 +48,17 @@ abstract class ProductWithoutChildren
     {
         $this->customData = $customData;
         $this->store = $product->getStore();
-        $type = $product->getTypeId();
-
-        $fields = $this->getFields();
-
         $this->areCustomersGroupsEnabled = $this->configHelper->isCustomerGroupsEnabled($product->getStoreId());
-
         $currencies = $this->store->getAvailableCurrencyCodes();
         $this->baseCurrencyCode = $this->store->getBaseCurrencyCode();
-
         $this->groups = $this->customerGroupCollectionFactory->create();
+        $fields = $this->getFields();
 
         if (!$this->areCustomersGroupsEnabled) {
             $this->groups->addFieldToFilter('main_table.customer_group_id', 0);
         }
 
+        // price/price_with_tax => true/false
         foreach ($fields as $field => $withTax) {
             $this->customData[$field] = [];
 
@@ -71,20 +67,13 @@ abstract class ProductWithoutChildren
 
                 $price = $product->getPrice();
                 if ($currencyCode !== $this->baseCurrencyCode) {
-                    $price = $this->priceCurrency->convert($price, $this->store, $currencyCode);
+                    $price = $this->convertPrice($price, $currencyCode);
                 }
 
-                $price = (double) $this->catalogHelper
-                    ->getTaxPrice($product, $price, $withTax, null, null, null, $product->getStore(), null);
+                $price = $this->getTaxPrice($product, $price, $withTax);
 
                 $this->customData[$field][$currencyCode]['default'] = $this->priceCurrency->round($price);
-                $this->customData[$field][$currencyCode]['default_formated'] = $this->priceCurrency->format(
-                    $price,
-                    false,
-                    PriceCurrencyInterface::DEFAULT_PRECISION,
-                    $this->store,
-                    $currencyCode
-                );
+                $this->customData[$field][$currencyCode]['default_formated'] = $this->formatPrice($price, $currencyCode);
 
                 $specialPrice = $this->getSpecialPrice($product, $currencyCode, $withTax);
 
@@ -106,16 +95,6 @@ abstract class ProductWithoutChildren
         return $this->customData;
     }
 
-    protected function addAdditionalData(
-        $product,
-        $withTax,
-        $subProducts,
-        $currencyCode,
-        $field
-    ) {
-        // Empty for products without children
-    }
-
     protected function getFields()
     {
         $priceDisplayType = $this->taxHelper->getPriceDisplayType($this->store);
@@ -131,11 +110,43 @@ abstract class ProductWithoutChildren
         return ['price' => false, 'price_with_tax' => true];
     }
 
-    protected function getSpecialPrice(
-        Product $product,
-        $currencyCode,
-        $withTax
-    ) {
+    protected function addAdditionalData($product, $withTax, $subProducts, $currencyCode, $field)
+    {
+        // Empty for products without children
+    }
+
+    protected function formatPrice($amount, $currencyCode)
+    {
+        return $this->priceCurrency->format(
+            $amount,
+            false,
+            PriceCurrencyInterface::DEFAULT_PRECISION,
+            $this->store,
+            $currencyCode
+        );
+    }
+
+    protected function convertPrice($amount, $currencyCode)
+    {
+        return $this->priceCurrency->convert($amount, $this->store, $currencyCode);
+    }
+
+    protected function getTaxPrice($product, $amount, $withTax)
+    {
+        return (double) $this->catalogHelper->getTaxPrice(
+            $product,
+            $amount,
+            $withTax,
+            null,
+            null,
+            null,
+            $this->store,
+            null
+        );
+    }
+
+    protected function getSpecialPrice(Product $product, $currencyCode, $withTax)
+    {
         $specialPrice = [];
 
         /** @var Group $group */
@@ -158,24 +169,11 @@ abstract class ProductWithoutChildren
 
             if ($specialPrice[$groupId]) {
                 if ($currencyCode !== $this->baseCurrencyCode) {
-                    $specialPrice[$groupId] = $this->priceCurrency->convert(
-                        $specialPrice[$groupId],
-                        $this->store,
-                        $currencyCode
-                    );
-                    $specialPrice[$groupId] = $this->priceCurrency->round($specialPrice[$groupId]);
+                    $specialPrice[$groupId] =
+                        $this->priceCurrency->round($this->convertPrice($specialPrice[$groupId], $currencyCode));
                 }
 
-                $specialPrice[$groupId] = (double) $this->catalogHelper->getTaxPrice(
-                    $product,
-                    $specialPrice[$groupId],
-                    $withTax,
-                    null,
-                    null,
-                    null,
-                    $product->getStore(),
-                    null
-                );
+                $specialPrice[$groupId] = $this->getTaxPrice($product, $specialPrice[$groupId], $withTax);
             }
         }
 
@@ -192,12 +190,8 @@ abstract class ProductWithoutChildren
         );
     }
 
-    protected function addCustomerGroupsPrices(
-        Product $product,
-        $currencyCode,
-        $withTax,
-        $field
-    ) {
+    protected function addCustomerGroupsPrices(Product $product, $currencyCode, $withTax, $field)
+    {
         /** @var \Magento\Customer\Model\Group $group */
         foreach ($this->groups as $group) {
             $groupId = (int) $group->getData('customer_group_id');
@@ -206,54 +200,39 @@ abstract class ProductWithoutChildren
 
             $discountedPrice = $product->getPriceModel()->getFinalPrice(1, $product);
             if ($currencyCode !== $this->baseCurrencyCode) {
-                $discountedPrice = $this->priceCurrency->convert($discountedPrice, $this->store, $currencyCode);
+                $discountedPrice = $this->convertPrice($discountedPrice, $currencyCode);
             }
 
             if ($discountedPrice !== false) {
-                $taxPrice = (double) $this->catalogHelper->getTaxPrice(
-                    $product,
-                    $discountedPrice,
-                    $withTax,
-                    null,
-                    null,
-                    null,
-                    $product->getStore(),
-                    null
-                );
+                $this->customData[$field][$currencyCode]['group_' . $groupId] =
+                    $this->getTaxPrice($product, $discountedPrice, $withTax);
 
-                $this->customData[$field][$currencyCode]['group_' . $groupId] = $taxPrice;
-
-                $formated = $this->priceCurrency->format(
-                    $this->customData[$field][$currencyCode]['group_' . $groupId],
-                    false,
-                    PriceCurrencyInterface::DEFAULT_PRECISION,
-                    $this->store,
-                    $currencyCode
-                );
-                $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] = $formated;
+                $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] =
+                    $this->formatPrice(
+                        $this->customData[$field][$currencyCode]['group_' . $groupId],
+                        $currencyCode
+                    );
 
                 if ($this->customData[$field][$currencyCode]['default'] >
                     $this->customData[$field][$currencyCode]['group_' . $groupId]) {
-                    $original = $this->customData[$field][$currencyCode]['default_formated'];
-                    $this->customData[$field][$currencyCode]['group_'.$groupId.'_original_formated'] = $original;
+
+                    $this->customData[$field][$currencyCode]['group_'.$groupId.'_original_formated'] =
+                        $this->customData[$field][$currencyCode]['default_formated'];
                 }
             } else {
-                $default = $this->customData[$field][$currencyCode]['default'];
-                $this->customData[$field][$currencyCode]['group_' . $groupId] = $default;
+                $this->customData[$field][$currencyCode]['group_' . $groupId] =
+                    $this->customData[$field][$currencyCode]['default'];
 
-                $defaultFormated = $this->customData[$field][$currencyCode]['default_formated'];
-                $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] = $defaultFormated;
+                $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] =
+                    $this->customData[$field][$currencyCode]['default_formated'];
             }
         }
 
         $product->setData('customer_group_id', null);
     }
 
-    protected function addSpecialPrices(
-        $specialPrice,
-        $field,
-        $currencyCode
-    ) {
+    protected function addSpecialPrices($specialPrice, $field, $currencyCode)
+    {
         if ($this->areCustomersGroupsEnabled) {
             /** @var \Magento\Customer\Model\Group $group */
             foreach ($this->groups as $group) {
@@ -263,19 +242,14 @@ abstract class ProductWithoutChildren
                     && $specialPrice[$groupId] < $this->customData[$field][$currencyCode]['group_' . $groupId]) {
                     $this->customData[$field][$currencyCode]['group_' . $groupId] = $specialPrice[$groupId];
 
-                    $formated = $this->priceCurrency->format(
-                        $specialPrice[$groupId],
-                        false,
-                        PriceCurrencyInterface::DEFAULT_PRECISION,
-                        $this->store,
-                        $currencyCode
-                    );
-                    $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] = $formated;
+                    $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] =
+                        $this->formatPrice($specialPrice[$groupId], $currencyCode);
 
                     if ($this->customData[$field][$currencyCode]['default'] >
                         $this->customData[$field][$currencyCode]['group_' . $groupId]) {
-                        $original = $this->customData[$field][$currencyCode]['default_formated'];
-                        $this->customData[$field][$currencyCode]['group_'.$groupId.'_original_formated'] = $original;
+
+                        $this->customData[$field][$currencyCode]['group_'.$groupId.'_original_formated'] =
+                            $this->customData[$field][$currencyCode]['default_formated'];
                     }
                 }
             }
@@ -284,19 +258,12 @@ abstract class ProductWithoutChildren
         }
 
         if ($specialPrice[0] && $specialPrice[0] < $this->customData[$field][$currencyCode]['default']) {
-            $defaultOriginalFormated = $this->customData[$field][$currencyCode]['default_formated'];
-            $this->customData[$field][$currencyCode]['default_original_formated'] = $defaultOriginalFormated;
-
-            $defaultFormated = $this->priceCurrency->format(
-                $specialPrice[0],
-                false,
-                PriceCurrencyInterface::DEFAULT_PRECISION,
-                $this->store,
-                $currencyCode
-            );
+            $this->customData[$field][$currencyCode]['default_original_formated'] =
+                $this->customData[$field][$currencyCode]['default_formated'];
 
             $this->customData[$field][$currencyCode]['default'] = $this->priceCurrency->round($specialPrice[0]);
-            $this->customData[$field][$currencyCode]['default_formated'] = $defaultFormated;
+            $this->customData[$field][$currencyCode]['default_formated'] =
+                $this->formatPrice($specialPrice[0], $currencyCode);
         }
     }
 }

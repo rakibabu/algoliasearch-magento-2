@@ -15,58 +15,26 @@ use Magento\CatalogRule\Model\ResourceModel\Rule;
 
 abstract class ProductWithChildren extends ProductWithoutChildren
 {
-    protected function addAdditionalData(
-        $product,
-        $withTax,
-        $subProducts,
-        $currencyCode,
-        $field
-    ) {
-        list($min, $max) = $this->getMinMaxPrices(
-            $product,
-            $withTax,
-            $subProducts,
-            $currencyCode
-        );
-
+    protected function addAdditionalData($product, $withTax, $subProducts, $currencyCode, $field)
+    {
+        list($min, $max) = $this->getMinMaxPrices($product, $withTax, $subProducts, $currencyCode);
         $dashedFormat = $this->getDashedPriceFormat($min, $max, $currencyCode);
 
         if ($min !== $max) {
-            $this->handleNonEqualMinMaxPrices(
-                $field,
-                $currencyCode,
-                $min,
-                $max,
-                $dashedFormat
-            );
+            $this->handleNonEqualMinMaxPrices($field, $currencyCode, $min, $max, $dashedFormat);
         }
 
         if (!$this->customData[$field][$currencyCode]['default']) {
-            $this->handleZeroDefaultPrice(
-                $field,
-                $currencyCode,
-                $min,
-                $max
-            );
+            $this->handleZeroDefaultPrice($field, $currencyCode, $min, $max);
         }
 
         if ($this->areCustomersGroupsEnabled) {
-            $this->setFinalGroupPrices(
-                $field,
-                $currencyCode,
-                $min,
-                $max,
-                $dashedFormat
-            );
+            $this->setFinalGroupPrices($field, $currencyCode, $min, $max, $dashedFormat);
         }
     }
 
-    protected function getMinMaxPrices(
-        Product $product,
-        $withTax,
-        $subProducts,
-        $currencyCode
-    ) {
+    protected function getMinMaxPrices(Product $product, $withTax, $subProducts, $currencyCode)
+    {
         $type = $product->getTypeId();
 
         $min = PHP_INT_MAX;
@@ -75,16 +43,7 @@ abstract class ProductWithChildren extends ProductWithoutChildren
         if (count($subProducts) > 0) {
             /** @var Product $subProduct */
             foreach ($subProducts as $subProduct) {
-                $price = (double) $this->catalogHelper->getTaxPrice(
-                    $product,
-                    $subProduct->getFinalPrice(),
-                    $withTax,
-                    null,
-                    null,
-                    null,
-                    $product->getStore(),
-                    null
-                );
+                $price = $this->getTaxPrice($product, $subProduct->getFinalPrice(), $withTax);
 
                 $min = min($min, $price);
                 $max = max($max, $price);
@@ -95,10 +54,10 @@ abstract class ProductWithChildren extends ProductWithoutChildren
 
 
         if ($currencyCode !== $this->baseCurrencyCode) {
-            $min = $this->priceCurrency->convert($min, $this->store, $currencyCode);
+            $min = $this->convertPrice($min, $currencyCode);
 
             if ($min !== $max) {
-                $max = $this->priceCurrency->convert($max, $this->store, $currencyCode);
+                $max = $this->convertPrice($max, $currencyCode);
             }
         }
 
@@ -111,32 +70,11 @@ abstract class ProductWithChildren extends ProductWithoutChildren
             return '';
         }
 
-        $minFormatted = $this->priceCurrency->format(
-            $min,
-            false,
-            PriceCurrencyInterface::DEFAULT_PRECISION,
-            $this->store,
-            $currencyCode
-        );
-
-        $maxFormatted = $this->priceCurrency->format(
-            $max,
-            false,
-            PriceCurrencyInterface::DEFAULT_PRECISION,
-            $this->store,
-            $currencyCode
-        );
-
-        return $minFormatted.' - '.$maxFormatted;
+        return $this->formatPrice($min, $currencyCode) .' - '. $this->formatPrice($max, $currencyCode);
     }
 
-    protected function handleNonEqualMinMaxPrices(
-        $field,
-        $currencyCode,
-        $min,
-        $max,
-        $dashedFormat
-    ) {
+    protected function handleNonEqualMinMaxPrices($field, $currencyCode, $min, $max, $dashedFormat)
+    {
         if (isset($this->customData[$field][$currencyCode]['default_original_formated']) === false
             || $min <= $this->customData[$field][$currencyCode]['default']) {
             $this->customData[$field][$currencyCode]['default_formated'] = $dashedFormat;
@@ -162,12 +100,8 @@ abstract class ProductWithChildren extends ProductWithoutChildren
         }
     }
 
-    protected function handleZeroDefaultPrice(
-        $field,
-        $currencyCode,
-        $min,
-        $max
-    ) {
+    protected function handleZeroDefaultPrice($field, $currencyCode, $min, $max)
+    {
         $this->customData[$field][$currencyCode]['default'] = $min;
 
         if ($min !== $max) {
@@ -175,19 +109,11 @@ abstract class ProductWithChildren extends ProductWithoutChildren
         }
 
         if ($currencyCode !== $this->baseCurrencyCode) {
-            $min = $this->priceCurrency->convert($min, $this->store, $currencyCode);
+            $min = $this->convertPrice($min, $currencyCode);
         }
 
-        $minFormatted = $this->priceCurrency->format(
-            $min,
-            false,
-            PriceCurrencyInterface::DEFAULT_PRECISION,
-            $this->store,
-            $currencyCode
-        );
-
         $this->customData[$field][$currencyCode]['default'] = $min;
-        $this->customData[$field][$currencyCode]['default_formated'] = $minFormatted;
+        $this->customData[$field][$currencyCode]['default_formated'] = $this->formatPrice($min, $currencyCode);
     }
 
     protected function setFinalGroupPrices($field, $currencyCode, $min, $max, $dashedFormat)
@@ -200,8 +126,8 @@ abstract class ProductWithChildren extends ProductWithoutChildren
                 $this->customData[$field][$currencyCode]['group_' . $groupId] = $min;
 
                 if ($min === $max) {
-                    $default = $this->customData[$field][$currencyCode]['default_formated'];
-                    $this->customData[$field][$currencyCode]['group_'.$groupId.'_formated'] = $default;
+                    $this->customData[$field][$currencyCode]['group_'.$groupId.'_formated'] =
+                        $this->customData[$field][$currencyCode]['default_formated'];
                 } else {
                     $this->customData[$field][$currencyCode]['group_'.$groupId.'_formated'] = $dashedFormat;
                 }
