@@ -12,6 +12,12 @@ use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
 use Magento\Customer\Model\Group;
 use Magento\CatalogRule\Model\ResourceModel\Rule;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Simple as PriceManagerSimple;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Virtual as PriceManagerVirtual;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Downloadable as PriceManagerDownloadable;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Configurable as PriceManagerConfigurable;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Bundle as PriceManagerBundle;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager\Grouped as PriceManagerGrouped;
 
 class PriceManager
 {
@@ -22,13 +28,26 @@ class PriceManager
     private $taxHelper;
     private $rule;
 
+    private $priceManagerSimple;
+    private $priceManagerVirtual;
+    private $priceManagerDownloadable;
+    private $priceManagerConfigurable;
+    private $priceManagerBundle;
+    private $priceManagerGrouped;
+
     public function __construct(
         ConfigHelper $configHelper,
         CollectionFactory $customerGroupCollectionFactory,
         PriceCurrencyInterface $priceCurrency,
         CatalogHelper $catalogHelper,
         TaxHelper $taxHelper,
-        Rule $rule
+        Rule $rule,
+        PriceManagerSimple $priceManagerSimple,
+        PriceManagerVirtual $priceManagerVirtual,
+        PriceManagerDownloadable $priceManagerDownloadable,
+        PriceManagerConfigurable $priceManagerConfigurable,
+        PriceManagerBundle $priceManagerBundle,
+        PriceManagerGrouped $priceManagerGrouped
     ) {
         $this->configHelper = $configHelper;
         $this->customerGroupCollectionFactory = $customerGroupCollectionFactory;
@@ -36,6 +55,21 @@ class PriceManager
         $this->catalogHelper = $catalogHelper;
         $this->taxHelper = $taxHelper;
         $this->rule = $rule;
+        $this->priceManagerSimple = $priceManagerSimple;
+        $this->priceManagerVirtual = $priceManagerVirtual;
+        $this->priceManagerDownloadable = $priceManagerDownloadable;
+        $this->priceManagerConfigurable = $priceManagerConfigurable;
+        $this->priceManagerBundle = $priceManagerBundle;
+        $this->priceManagerGrouped = $priceManagerGrouped;
+    }
+
+    public function addPriceDataByProductType($customData, Product $product, $subProducts)
+    {
+        $priceManager = 'priceManager' . ucfirst($product->getTypeId());
+        if (! $this->{$priceManager}) {
+            throw new \Exception('Unknown Product Type');
+        }
+        return $this->{$priceManager}->addPriceData($customData, $product, $subProducts);
     }
 
     public function addPriceData($customData, Product $product, $subProducts)
