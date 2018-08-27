@@ -39,6 +39,7 @@ class ProductHelper
     private $currencyManager;
     private $categoryHelper;
     private $priceManager;
+
     private $imageHelper;
 
     /**
@@ -446,11 +447,7 @@ class ProductHelper
 //        $customData = $this->priceManager->addPriceData($customData, $product, $subProducts);
 
         // new behaviour
-        $priceManager = 'priceManager' . ucfirst($product->getTypeId());
-        if (! $this->{$priceManager}) {
-            throw new \Exception('Unknown Product Type');
-        }
-        $customData = $this->{$priceManager}->addPriceData($customData, $product, $subProducts);
+        $customData = $this->priceManager->addPriceDataByProductType($customData, $product, $subProducts);
 
         $transport = new DataObject($customData);
         $this->eventManager->dispatch(
