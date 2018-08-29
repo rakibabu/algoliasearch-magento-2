@@ -193,13 +193,13 @@ abstract class ProductWithoutChildren
             foreach ($productTierPrices as $productTierPrice) {
 
                 if (!isset($tierPrices[$productTierPrice->getCustomerGroupId()])) {
-                    $tierPrices[$productTierPrice->getCustomerGroupId()] = (double)$productTierPrice->getValue();
+                    $tierPrices[$productTierPrice->getCustomerGroupId()] = $productTierPrice->getValue();
                     continue;
                 }
 
                 $tierPrices[$productTierPrice->getCustomerGroupId()] = min(
                     $tierPrices[$productTierPrice->getCustomerGroupId()],
-                    (double)$productTierPrice->getValue()
+                    $productTierPrice->getValue()
                 );
             }
         }
