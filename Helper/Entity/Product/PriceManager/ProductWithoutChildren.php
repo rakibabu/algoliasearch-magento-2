@@ -188,17 +188,20 @@ abstract class ProductWithoutChildren
         $tierPrice = [];
         $tierPrices = [];
 
-        foreach($product->getTierPrices() as $productTierPrice) {
+        if (!is_null($product->getTierPrices())) {
+            $productTierPrices = $product->getTierPrices();
+            foreach ($productTierPrices as $productTierPrice) {
 
-            if (!isset($tierPrices[$productTierPrice->getCustomerGroupId()])) {
-                $tierPrices[$productTierPrice->getCustomerGroupId()] = (double) $productTierPrice->getValue();
-                continue;
+                if (!isset($tierPrices[$productTierPrice->getCustomerGroupId()])) {
+                    $tierPrices[$productTierPrice->getCustomerGroupId()] = (double)$productTierPrice->getValue();
+                    continue;
+                }
+
+                $tierPrices[$productTierPrice->getCustomerGroupId()] = min(
+                    $tierPrices[$productTierPrice->getCustomerGroupId()],
+                    (double)$productTierPrice->getValue()
+                );
             }
-
-            $tierPrices[$productTierPrice->getCustomerGroupId()] = min(
-                $tierPrices[$productTierPrice->getCustomerGroupId()],
-                (double) $productTierPrice->getValue()
-            );
         }
 
         /** @var Group $group */
