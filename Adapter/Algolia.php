@@ -32,9 +32,7 @@ class Algolia implements AdapterInterface
     /** @var ResourceConnection */
     private $resource;
 
-    /**
-     * @var AggregationBuilder
-     */
+    /** @var AggregationBuilder */
     private $aggregationBuilder;
 
     /** @var TemporaryStorageFactory */
