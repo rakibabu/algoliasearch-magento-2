@@ -239,7 +239,7 @@ class AlgoliaHelper extends AbstractHelper
             $page++;
         } while (($page * $hitsPerPage) < $complexSynonyms['nbHits']);
 
-        if (! $synonyms) {
+        if (!$synonyms) {
             $res = $index->clearSynonyms(true);
         } else {
             $res = $index->batchSynonyms($synonyms, true, true);
@@ -269,7 +269,7 @@ class AlgoliaHelper extends AbstractHelper
             $page++;
         } while (($page * $hitsPerPage) < $fetchedSynonyms['nbHits']);
 
-        if (! $synonymsToSet) {
+        if (!$synonymsToSet) {
             $res = $toIndex->clearSynonyms(true);
         } else {
             $res = $toIndex->batchSynonyms($synonymsToSet, true, true);
@@ -303,7 +303,7 @@ class AlgoliaHelper extends AbstractHelper
             $page++;
         } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
 
-        if (! $queryRulesToSet) {
+        if (!$queryRulesToSet) {
             $res = $toIndex->clearRules(true);
         } else {
             $res = $toIndex->batchRules($queryRulesToSet, true, true);
@@ -321,7 +321,7 @@ class AlgoliaHelper extends AbstractHelper
 
         $this->resetCredentialsFromConfig();
 
-        if (! isset($this->client)) {
+        if (!isset($this->client)) {
             $msg = 'Operation ' . $methodName . ' could not be performed because Algolia credentials were not provided.';
             throw new AlgoliaException($msg);
         }
@@ -345,7 +345,7 @@ class AlgoliaHelper extends AbstractHelper
             $lastTaskId = self::$lastTaskId;
         }
 
-        if (! $lastUsedIndexName || ! $lastTaskId) {
+        if (!$lastUsedIndexName || !$lastTaskId) {
             return;
         }
 

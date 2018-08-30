@@ -53,7 +53,7 @@ class Observer implements ObserverInterface
 
         /** @var \Magento\Catalog\Model\Category $category */
         $category = $this->registry->registry('current_category');
-        if (! $category) {
+        if (!$category) {
             return;
         }
 

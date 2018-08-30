@@ -256,7 +256,7 @@ class Configuration extends Algolia implements CollectionDataSourceInterface
         }
 
         $lastOrder = $this->getLastOrder();
-        if (! $lastOrder) {
+        if (!$lastOrder) {
             return $ids;
         }
 

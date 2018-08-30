@@ -105,7 +105,7 @@ class Url extends ProductUrl
         }
 
         // reset cached URL instance GET query params
-        if (! isset($routeParams['_query'])) {
+        if (!isset($routeParams['_query'])) {
             $routeParams['_query'] = [];
         }
 
@@ -130,7 +130,7 @@ class Url extends ProductUrl
      */
     public function getStoreScopeUrlInstance($storeId)
     {
-        if (! $storeId) {
+        if (!$storeId) {
             return $this->objectManager->create(self::BACKEND_URL);
         }
 
@@ -141,9 +141,9 @@ class Url extends ProductUrl
     {
         $categoryId = null;
 
-        if (! isset($params['_ignore_category'])
+        if (!isset($params['_ignore_category'])
             && $product->getCategoryId()
-            && ! $product->getData('do_not_use_category_id')) {
+            && !$product->getData('do_not_use_category_id')) {
             $categoryId = $product->getCategoryId();
         }
 

@@ -37,7 +37,7 @@ abstract class AbstractTable extends AbstractFieldArray
 
     protected function getRenderer($columnId, $columnData)
     {
-        if (! array_key_exists($columnId, $this->selectFields) || ! $this->selectFields[$columnId]) {
+        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId]) {
             /** @var \Algolia\AlgoliaSearch\Block\System\Form\Field\Select $select */
             $select = $this->getLayout()
                            ->createBlock('Algolia\AlgoliaSearch\Block\System\Form\Field\Select', '', [

@@ -65,7 +65,7 @@ class Image extends \Magento\Catalog\Helper\Image
     {
         $model = $this->_getModel();
         $baseFile = $model->getBaseFile();
-        if (! $baseFile) {
+        if (!$baseFile) {
             if ($this->getImageFile()) {
                 $model->setBaseFile($this->getImageFile());
             } else {

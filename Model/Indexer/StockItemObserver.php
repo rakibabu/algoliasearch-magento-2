@@ -19,7 +19,7 @@ class StockItemObserver
         \Magento\CatalogInventory\Api\Data\StockItemInterface $stockItem
     ) {
         $stockItemModel->addCommitCallback(function () use ($stockItem) {
-            if (! $this->indexer->isScheduled()) {
+            if (!$this->indexer->isScheduled()) {
                 $this->indexer->reindexRow($stockItem->getProductId());
             }
         });
@@ -33,7 +33,7 @@ class StockItemObserver
         \Magento\CatalogInventory\Api\Data\StockItemInterface $stockItem
     ) {
         $stockItemResource->addCommitCallback(function () use ($stockItem) {
-            if (! $this->indexer->isScheduled()) {
+            if (!$this->indexer->isScheduled()) {
                 $this->indexer->reindexRow($stockItem->getProductId());
             }
         });

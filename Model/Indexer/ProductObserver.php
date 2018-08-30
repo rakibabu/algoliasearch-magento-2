@@ -21,7 +21,7 @@ class ProductObserver
         AbstractModel $product
     ) {
         $productResource->addCommitCallback(function () use ($product) {
-            if (! $this->indexer->isScheduled()) {
+            if (!$this->indexer->isScheduled()) {
                 $this->indexer->reindexRow($product->getId());
             }
         });
@@ -35,7 +35,7 @@ class ProductObserver
         AbstractModel $product
     ) {
         $productResource->addCommitCallback(function () use ($product) {
-            if (! $this->indexer->isScheduled()) {
+            if (!$this->indexer->isScheduled()) {
                 $this->indexer->reindexRow($product->getId());
             }
         });
@@ -51,7 +51,7 @@ class ProductObserver
         $storeId
     ) {
         $result = $closure($productIds, $attrData, $storeId);
-        if (! $this->indexer->isScheduled()) {
+        if (!$this->indexer->isScheduled()) {
             $this->indexer->reindexList(array_unique($productIds));
         }
 
@@ -66,7 +66,7 @@ class ProductObserver
         $type
     ) {
         $result = $closure($productIds, $websiteIds, $type);
-        if (! $this->indexer->isScheduled()) {
+        if (!$this->indexer->isScheduled()) {
             $this->indexer->reindexList(array_unique($productIds));
         }
 

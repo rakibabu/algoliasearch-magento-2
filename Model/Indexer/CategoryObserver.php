@@ -20,7 +20,7 @@ class CategoryObserver
         AbstractModel $category
     ) {
         $categoryResource->addCommitCallback(function () use ($category) {
-            if (! $this->indexer->isScheduled()) {
+            if (!$this->indexer->isScheduled()) {
                 Category::$affectedProductIds = (array) $category->getData('affected_product_ids');
                 $this->indexer->reindexRow($category->getId());
             }
@@ -35,7 +35,7 @@ class CategoryObserver
         AbstractModel $category
     ) {
         $categoryResource->addCommitCallback(function () use ($category) {
-            if (! $this->indexer->isScheduled()) {
+            if (!$this->indexer->isScheduled()) {
                 Category::$affectedProductIds = (array) $category->getData('affected_product_ids');
                 $this->indexer->reindexRow($category->getId());
             }
