@@ -42,7 +42,7 @@ class AdditionalSection implements Magento\Framework\Indexer\ActionInterface, Ma
 
     public function executeFull()
     {
-        if ( ! $this->configHelper->getApplicationID()
+        if (! $this->configHelper->getApplicationID()
             || ! $this->configHelper->getAPIKey()
             || ! $this->configHelper->getSearchOnlyAPIKey()) {
             $errorMessage = 'Algolia reindexing failed: 

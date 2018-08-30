@@ -6,7 +6,7 @@ $json['http-basic']['repo.magento.com'] = [
 ];
 
 $dirname = dirname(getenv('AUTH_DIR'));
-if ( ! is_dir($dirname)) {
+if (! is_dir($dirname)) {
     mkdir($dirname, 0777, true);
 }
 

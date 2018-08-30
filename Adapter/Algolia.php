@@ -121,7 +121,7 @@ class Algolia implements AdapterInterface
                 $algoliaQuery = $query !== '__empty__' ? $query : '';
 
                 // If instant search is on, do not make a search query unless SEO request is set to 'Yes'
-                if ( ! $this->config->isInstantEnabled($storeId) || $this->config->makeSeoRequest($storeId)) {
+                if (! $this->config->isInstantEnabled($storeId) || $this->config->makeSeoRequest($storeId)) {
                     $documents = $this->algoliaHelper->getSearchResult($algoliaQuery, $storeId);
                 }
 

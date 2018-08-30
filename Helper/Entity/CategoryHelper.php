@@ -164,7 +164,7 @@ class CategoryHelper
             ->addPathFilter($storeRootCategoryPath)
             ->addAttributeToSelect(array_merge(['name'], $additionalAttr));
 
-        if ( ! $this->configHelper->showCatsNotIncludedInNavigation()) {
+        if (! $this->configHelper->showCatsNotIncludedInNavigation()) {
             $categories->addAttributeToFilter('include_in_menu', '1');
         }
 
@@ -259,7 +259,7 @@ class CategoryHelper
             'product_count' => $category->getProductCount(),
         ];
 
-        if ( ! empty($imageUrl)) {
+        if (! empty($imageUrl)) {
             $imageUrl = $this->imageHelper->removeProtocol($imageUrl);
             $imageUrl = $this->imageHelper->removeDoubleSlashes($imageUrl);
 
@@ -357,7 +357,7 @@ class CategoryHelper
             $parentCategoryIds = array_reverse($parentCategoryIds); // Start from the first parent
 
             foreach ($parentCategoryIds as $parentCategoryId) {
-                if ( ! ($parentCategoryPath = $this->getCategoryPath($parentCategoryId, $storeId))) {
+                if (! ($parentCategoryPath = $this->getCategoryPath($parentCategoryId, $storeId))) {
                     $isActive = false;
                     break;
                 }
@@ -455,7 +455,7 @@ class CategoryHelper
         $categoryId = (int) $categoryId;
         $storeId = (int) $storeId;
 
-        if ( ! isset($this->categoryNames)) {
+        if (! isset($this->categoryNames)) {
             $this->categoryNames = [];
 
             /** @var CategoryResource $categoryModel */

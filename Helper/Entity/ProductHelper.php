@@ -122,7 +122,7 @@ class ProductHelper
 
     public function getAllAttributes($addEmptyRow = false)
     {
-        if ( ! isset($this->productAttributes)) {
+        if (! isset($this->productAttributes)) {
             $this->productAttributes = [];
 
             $allAttributes = $this->eavConfig->getEntityAttributeCodes('catalog_product');
@@ -580,7 +580,7 @@ class ProductHelper
                 $path = [];
 
                 foreach ($category->getPathIds() as $treeCategoryId) {
-                    if ( ! $this->configHelper->showCatsNotIncludedInNavigation($storeId)
+                    if (! $this->configHelper->showCatsNotIncludedInNavigation($storeId)
                         && ! $this->categoryHelper->isCategoryVisibleInMenu($treeCategoryId, $storeId)) {
                         // If the category should not be included in menu - skip it
                         $path[] = null;
@@ -717,7 +717,7 @@ class ProductHelper
 
             /** @var AttributeResource $attributeResource */
             $attributeResource = $resource->getAttribute($attribute['attribute']);
-            if ( ! $attributeResource) {
+            if (! $attributeResource) {
                 continue;
             }
 
@@ -821,7 +821,7 @@ class ProductHelper
     ) {
         $valueText = null;
 
-        if ( ! is_array($value)) {
+        if (! is_array($value)) {
             $valueText = $product->getAttributeText($attribute['attribute']);
         }
 
@@ -845,7 +845,7 @@ class ProductHelper
 
         foreach ($this->getAdditionalAttributes() as $attribute) {
             if ($attribute['searchable'] === '1') {
-                if ( ! isset($attribute['order']) || $attribute['order'] === 'ordered') {
+                if (! isset($attribute['order']) || $attribute['order'] === 'ordered') {
                     $searchableAttributes[] = $attribute['attribute'];
                 } else {
                     $searchableAttributes[] = 'unordered(' . $attribute['attribute'] . ')';
@@ -963,7 +963,7 @@ class ProductHelper
         $rules = [];
         $facets = $this->configHelper->getFacets();
         foreach ($facets as $facet) {
-            if ( ! array_key_exists('create_rule', $facet) || $facet['create_rule'] !== '1') {
+            if (! array_key_exists('create_rule', $facet) || $facet['create_rule'] !== '1') {
                 continue;
             }
 

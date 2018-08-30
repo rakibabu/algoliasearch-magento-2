@@ -291,7 +291,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         /* CREATE QUEUE DB TABLE */
 
-        if ( ! $context->getVersion() || version_compare($context->getVersion(), '1.0.0') < 0) {
+        if (! $context->getVersion() || version_compare($context->getVersion(), '1.0.0') < 0) {
             $connection = $setup->getConnection();
             $table = $connection->newTable($setup->getTable('algoliasearch_queue'));
 

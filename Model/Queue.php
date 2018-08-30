@@ -86,7 +86,7 @@ class Queue
 
     public function runCron($nbJobs = null, $force = false)
     {
-        if ( ! $this->configHelper->isQueueActive() && $force === false) {
+        if (! $this->configHelper->isQueueActive() && $force === false) {
             return;
         }
 
@@ -404,13 +404,13 @@ class Queue
             return false;
         }
 
-        if (( ! isset($j1['data']['product_ids']) || count($j1['data']['product_ids']) <= 0)
-            && ( ! isset($j1['data']['category_ids']) || count($j1['data']['category_ids']) < 0)) {
+        if ((! isset($j1['data']['product_ids']) || count($j1['data']['product_ids']) <= 0)
+            && (! isset($j1['data']['category_ids']) || count($j1['data']['category_ids']) < 0)) {
             return false;
         }
 
-        if (( ! isset($j2['data']['product_ids']) || count($j2['data']['product_ids']) <= 0)
-            && ( ! isset($j2['data']['category_ids']) || count($j2['data']['category_ids']) < 0)) {
+        if ((! isset($j2['data']['product_ids']) || count($j2['data']['product_ids']) <= 0)
+            && (! isset($j2['data']['category_ids']) || count($j2['data']['category_ids']) < 0)) {
             return false;
         }
 

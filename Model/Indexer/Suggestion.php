@@ -49,7 +49,7 @@ class Suggestion implements Magento\Framework\Indexer\ActionInterface, Magento\F
 
     public function executeFull()
     {
-        if ( ! $this->configHelper->getApplicationID()
+        if (! $this->configHelper->getApplicationID()
             || ! $this->configHelper->getAPIKey()
             || ! $this->configHelper->getSearchOnlyAPIKey()) {
             $errorMessage = 'Algolia reindexing failed: 

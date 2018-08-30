@@ -46,7 +46,7 @@ class DeleteProduct implements Magento\Framework\Indexer\ActionInterface, Magent
 
     public function executeFull()
     {
-        if ( ! $this->configHelper->getApplicationID()
+        if (! $this->configHelper->getApplicationID()
             || ! $this->configHelper->getAPIKey()
             || ! $this->configHelper->getSearchOnlyAPIKey()) {
             $errorMessage = 'Algolia reindexing failed: 

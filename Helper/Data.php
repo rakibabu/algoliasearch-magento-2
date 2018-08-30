@@ -86,7 +86,7 @@ class Data
 
     public function saveConfigurationToAlgolia($storeId, $useTmpIndex = false)
     {
-        if ( ! ($this->configHelper->getApplicationID() && $this->configHelper->getAPIKey())) {
+        if (! ($this->configHelper->getApplicationID() && $this->configHelper->getAPIKey())) {
             return;
         }
 
@@ -422,7 +422,7 @@ class Data
 
         /** @var Category $category */
         foreach ($collection as $category) {
-            if ( ! $this->categoryHelper->isCategoryActive($category->getId(), $storeId)) {
+            if (! $this->categoryHelper->isCategoryActive($category->getId(), $storeId)) {
                 continue;
             }
 
@@ -495,9 +495,9 @@ class Data
                 continue;
             }
 
-            if ( ! $this->configHelper->getShowOutOfStock($storeId)) {
+            if (! $this->configHelper->getShowOutOfStock($storeId)) {
                 $stockItem = $this->stockRegistry->getStockItem($product->getId());
-                if ( ! $product->isSalable() || ! $stockItem->getIsInStock()) {
+                if (! $product->isSalable() || ! $stockItem->getIsInStock()) {
                     $productsToRemove[$productId] = $productId;
                     continue;
                 }

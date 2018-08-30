@@ -93,7 +93,7 @@ class PageHelper
 
             $page->setData('store_id', $storeId);
 
-            if ( ! $page->getId()) {
+            if (! $page->getId()) {
                 continue;
             }
 

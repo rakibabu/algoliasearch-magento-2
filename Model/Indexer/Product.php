@@ -45,7 +45,7 @@ class Product implements Magento\Framework\Indexer\ActionInterface, Magento\Fram
 
     public function execute($productIds)
     {
-        if ( ! $this->configHelper->getApplicationID()
+        if (! $this->configHelper->getApplicationID()
             || ! $this->configHelper->getAPIKey()
             || ! $this->configHelper->getSearchOnlyAPIKey()) {
             $errorMessage = 'Algolia reindexing failed: 

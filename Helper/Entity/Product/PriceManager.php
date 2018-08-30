@@ -52,7 +52,7 @@ class PriceManager
 
         $groups = $this->customerGroupCollectionFactory->create();
 
-        if ( ! $areCustomersGroupsEnabled) {
+        if (! $areCustomersGroupsEnabled) {
             $groups->addFieldToFilter('main_table.customer_group_id', 0);
         }
 
@@ -139,7 +139,7 @@ class PriceManager
                         );
                     }
 
-                    if ( ! $customData[$field][$currencyCode]['default']) {
+                    if (! $customData[$field][$currencyCode]['default']) {
                         $customData = $this->handleZeroDefaultPrice(
                             $customData,
                             $field,
