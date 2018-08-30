@@ -275,7 +275,7 @@ class ConfigHelper
             $storeId
         );
 
-        if (!$imageWidth) {
+        if ( ! $imageWidth) {
             return 265;
         }
 
@@ -290,7 +290,7 @@ class ConfigHelper
             $storeId
         );
 
-        if (!$imageHeight) {
+        if ( ! $imageHeight) {
             return 265;
         }
 
@@ -497,7 +497,7 @@ class ConfigHelper
             if ($indexName && $sortAttribute) {
                 $attr['name'] = $indexName;
 
-                if (!array_key_exists('label', $attr) && array_key_exists('sortLabel', $attr)) {
+                if ( ! array_key_exists('label', $attr) && array_key_exists('sortLabel', $attr)) {
                     $attr['label'] = $attr['sortLabel'];
                 }
 
@@ -687,7 +687,7 @@ class ConfigHelper
 
         foreach ($allowedUserAgents as $allowedUserAgent) {
             $allowedUserAgent = mb_strtolower($allowedUserAgent, 'utf-8');
-            if (strpos($userAgent, $allowedUserAgent) !== false) {
+            if (mb_strpos($userAgent, $allowedUserAgent) !== false) {
                 return false;
             }
         }
@@ -724,7 +724,7 @@ class ConfigHelper
 
     public function getPopularQueries($storeId = null)
     {
-        if (!$this->isInstantEnabled($storeId) || !$this->showSuggestionsOnNoResultsPage($storeId)) {
+        if ( ! $this->isInstantEnabled($storeId) || ! $this->showSuggestionsOnNoResultsPage($storeId)) {
             return [];
         }
 
@@ -837,7 +837,7 @@ class ConfigHelper
     {
         $filename = $this->configInterface->getValue(self::SYNONYMS_FILE, ScopeInterface::SCOPE_STORE, $storeId);
 
-        if (!$filename) {
+        if ( ! $filename) {
             return null;
         }
 

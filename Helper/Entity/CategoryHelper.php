@@ -53,6 +53,7 @@ class CategoryHelper
 
     /**
      * CategoryHelper constructor.
+     *
      * @param ManagerInterface $eventManager
      * @param StoreManagerInterface $storeManager
      * @param ResourceConnection $resourceConnection
@@ -163,7 +164,7 @@ class CategoryHelper
             ->addPathFilter($storeRootCategoryPath)
             ->addAttributeToSelect(array_merge(['name'], $additionalAttr));
 
-        if (!$this->configHelper->showCatsNotIncludedInNavigation()) {
+        if ( ! $this->configHelper->showCatsNotIncludedInNavigation()) {
             $categories->addAttributeToFilter('include_in_menu', '1');
         }
 
@@ -258,7 +259,7 @@ class CategoryHelper
             'product_count' => $category->getProductCount(),
         ];
 
-        if (!empty($imageUrl)) {
+        if ( ! empty($imageUrl)) {
             $imageUrl = $this->imageHelper->removeProtocol($imageUrl);
             $imageUrl = $this->imageHelper->removeDoubleSlashes($imageUrl);
 
@@ -327,7 +328,7 @@ class CategoryHelper
         $unsecureBaseUrl = $category->getUrlInstance()->getBaseUrl(['_secure' => false]);
         $secureBaseUrl = $category->getUrlInstance()->getBaseUrl(['_secure' => true]);
 
-        if (strpos($categoryUrl, $unsecureBaseUrl) === 0) {
+        if (mb_strpos($categoryUrl, $unsecureBaseUrl) === 0) {
             return substr_replace($categoryUrl, $secureBaseUrl, 0, mb_strlen($unsecureBaseUrl));
         }
 
@@ -356,7 +357,7 @@ class CategoryHelper
             $parentCategoryIds = array_reverse($parentCategoryIds); // Start from the first parent
 
             foreach ($parentCategoryIds as $parentCategoryId) {
-                if (!($parentCategoryPath = $this->getCategoryPath($parentCategoryId, $storeId))) {
+                if ( ! ($parentCategoryPath = $this->getCategoryPath($parentCategoryId, $storeId))) {
                     $isActive = false;
                     break;
                 }
@@ -418,7 +419,7 @@ class CategoryHelper
 
         if ($attribute = $resource->getAttribute('is_active')) {
             $columnId = $this->getCorrectIdColumn();
-            $key = new \Zend_Db_Expr("CONCAT(backend.store_id, '-', backend." . $columnId . ")");
+            $key = new \Zend_Db_Expr("CONCAT(backend.store_id, '-', backend." . $columnId . ')');
 
             $connection = $this->resourceConnection->getConnection();
             $select = $connection->select()
@@ -454,7 +455,7 @@ class CategoryHelper
         $categoryId = (int) $categoryId;
         $storeId = (int) $storeId;
 
-        if (!isset($this->categoryNames)) {
+        if ( ! isset($this->categoryNames)) {
             $this->categoryNames = [];
 
             /** @var CategoryResource $categoryModel */
@@ -462,7 +463,7 @@ class CategoryHelper
 
             if ($attribute = $categoryModel->getAttribute('name')) {
                 $columnId = $this->getCorrectIdColumn();
-                $expression = new \Zend_Db_Expr("CONCAT(backend.store_id, '-', backend." . $columnId . ")");
+                $expression = new \Zend_Db_Expr("CONCAT(backend.store_id, '-', backend." . $columnId . ')');
 
                 $connection = $this->resourceConnection->getConnection();
                 $select = $connection->select()

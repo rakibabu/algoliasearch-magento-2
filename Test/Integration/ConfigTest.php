@@ -24,7 +24,7 @@ class ConfigTest extends TestCase
         $attributesMatched = 0;
         foreach ($facets as $facet) {
             foreach ($indexSettings['attributesForFaceting'] as $indexFacet) {
-                if ($facet['attribute'] === 'price' && strpos($indexFacet, 'price.') === 0) {
+                if ($facet['attribute'] === 'price' && mb_strpos($indexFacet, 'price.') === 0) {
                     $attributesMatched++;
                 } elseif ($facet['attribute'] === $indexFacet) {
                     $attributesMatched++;
@@ -279,7 +279,7 @@ class ConfigTest extends TestCase
 
             // Check if the error message contains error for all sections
             foreach ($sections as $section) {
-                $position = strpos($message, $section);
+                $position = mb_strpos($message, $section);
                 $this->assertTrue($position !== false);
             }
 

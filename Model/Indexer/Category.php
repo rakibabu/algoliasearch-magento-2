@@ -47,9 +47,9 @@ class Category implements Magento\Framework\Indexer\ActionInterface, Magento\Fra
 
     public function execute($categoryIds)
     {
-        if (!$this->configHelper->getApplicationID()
-            || !$this->configHelper->getAPIKey()
-            || !$this->configHelper->getSearchOnlyAPIKey()) {
+        if ( ! $this->configHelper->getApplicationID()
+            || ! $this->configHelper->getAPIKey()
+            || ! $this->configHelper->getSearchOnlyAPIKey()) {
             $errorMessage = 'Algolia reindexing failed: 
                 You need to configure your Algolia credentials in Stores > Configuration > Algolia Search.';
 

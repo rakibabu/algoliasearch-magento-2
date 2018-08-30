@@ -54,7 +54,7 @@ class EnableClickAnalytics extends Value
             'position' => 1,
         ]);
 
-        curl_setopt($ch, CURLOPT_URL, "https://insights.algolia.io/1/searches/click");
+        curl_setopt($ch, CURLOPT_URL, 'https://insights.algolia.io/1/searches/click');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         curl_setopt($ch, CURLOPT_POST, 1);

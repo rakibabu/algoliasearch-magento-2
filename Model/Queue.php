@@ -86,7 +86,7 @@ class Queue
 
     public function runCron($nbJobs = null, $force = false)
     {
-        if (!$this->configHelper->isQueueActive() && $force === false) {
+        if ( ! $this->configHelper->isQueueActive() && $force === false) {
             return;
         }
 
@@ -153,7 +153,7 @@ class Queue
                 // Increment retries, set the job ID back to NULL
                 $updateQuery = "UPDATE {$this->table} 
                     SET pid = NULL, retries = retries + 1 
-                    WHERE job_id IN (" . implode(', ', (array) $job['merged_ids']) . ")";
+                    WHERE job_id IN (" . implode(', ', (array) $job['merged_ids']) . ')';
                 $this->db->query($updateQuery);
 
                 // Log error information
@@ -241,7 +241,7 @@ class Queue
                 foreach ($rawJobs as $job) {
                     $jobSize = (int) $job['data_size'];
 
-                    if ($actualBatchSize + $jobSize <= $maxBatchSize || !$jobs) {
+                    if ($actualBatchSize + $jobSize <= $maxBatchSize || ! $jobs) {
                         $jobs[] = $job;
                         $actualBatchSize += $jobSize;
                     } else {
@@ -404,13 +404,13 @@ class Queue
             return false;
         }
 
-        if ((!isset($j1['data']['product_ids']) || count($j1['data']['product_ids']) <= 0)
-            && (!isset($j1['data']['category_ids']) || count($j1['data']['category_ids']) < 0)) {
+        if (( ! isset($j1['data']['product_ids']) || count($j1['data']['product_ids']) <= 0)
+            && ( ! isset($j1['data']['category_ids']) || count($j1['data']['category_ids']) < 0)) {
             return false;
         }
 
-        if ((!isset($j2['data']['product_ids']) || count($j2['data']['product_ids']) <= 0)
-            && (!isset($j2['data']['category_ids']) || count($j2['data']['category_ids']) < 0)) {
+        if (( ! isset($j2['data']['product_ids']) || count($j2['data']['product_ids']) <= 0)
+            && ( ! isset($j2['data']['category_ids']) || count($j2['data']['category_ids']) < 0)) {
             return false;
         }
 
@@ -476,7 +476,7 @@ class Queue
                                 ->fetchAll(\PDO::FETCH_COLUMN, 0);
 
         if ($idsToDelete) {
-            $this->db->query("DELETE FROM {$this->logTable} WHERE id IN (" . implode(", ", $idsToDelete) . ")");
+            $this->db->query("DELETE FROM {$this->logTable} WHERE id IN (" . implode(', ', $idsToDelete) . ')');
         }
     }
 

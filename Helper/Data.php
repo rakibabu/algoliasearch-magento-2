@@ -86,7 +86,7 @@ class Data
 
     public function saveConfigurationToAlgolia($storeId, $useTmpIndex = false)
     {
-        if (!($this->configHelper->getApplicationID() && $this->configHelper->getAPIKey())) {
+        if ( ! ($this->configHelper->getApplicationID() && $this->configHelper->getAPIKey())) {
             return;
         }
 
@@ -388,7 +388,7 @@ class Data
 
             $suggestionObject = $this->suggestionHelper->getObject($suggestion);
 
-            if (strlen($suggestionObject['query']) >= 3) {
+            if (mb_strlen($suggestionObject['query']) >= 3) {
                 array_push($indexData, $suggestionObject);
             }
         }
@@ -422,7 +422,7 @@ class Data
 
         /** @var Category $category */
         foreach ($collection as $category) {
-            if (!$this->categoryHelper->isCategoryActive($category->getId(), $storeId)) {
+            if ( ! $this->categoryHelper->isCategoryActive($category->getId(), $storeId)) {
                 continue;
             }
 
@@ -485,7 +485,7 @@ class Data
 
             if ($product->isDeleted() === true
                 || $product->getStatus() === Status::STATUS_DISABLED
-                || !in_array($product->getVisibility(), [
+                || ! in_array($product->getVisibility(), [
                     Visibility::VISIBILITY_BOTH,
                     Visibility::VISIBILITY_IN_SEARCH,
                     Visibility::VISIBILITY_IN_CATALOG,
@@ -495,9 +495,9 @@ class Data
                 continue;
             }
 
-            if (!$this->configHelper->getShowOutOfStock($storeId)) {
+            if ( ! $this->configHelper->getShowOutOfStock($storeId)) {
                 $stockItem = $this->stockRegistry->getStockItem($product->getId());
-                if (!$product->isSalable() || !$stockItem->getIsInStock()) {
+                if ( ! $product->isSalable() || ! $stockItem->getIsInStock()) {
                     $productsToRemove[$productId] = $productId;
                     continue;
                 }
@@ -701,7 +701,7 @@ class Data
                     }
                 }
             } catch (AlgoliaException $e) {
-                if (strpos($e->getMessage(), 'Invalid object attributes:') === 0) {
+                if (mb_strpos($e->getMessage(), 'Invalid object attributes:') === 0) {
                     $error[] = '
                         Extra settings for "' . $section . '" indices were not saved. 
                         Error message: "' . $e->getMessage() . '"';

@@ -32,7 +32,9 @@ class Algolia implements AdapterInterface
     /** @var ResourceConnection */
     private $resource;
 
-    /** @var AggregationBuilder */
+    /**
+     * @var AggregationBuilder
+     */
     private $aggregationBuilder;
 
     /** @var TemporaryStorageFactory */
@@ -119,7 +121,7 @@ class Algolia implements AdapterInterface
                 $algoliaQuery = $query !== '__empty__' ? $query : '';
 
                 // If instant search is on, do not make a search query unless SEO request is set to 'Yes'
-                if (!$this->config->isInstantEnabled($storeId) || $this->config->makeSeoRequest($storeId)) {
+                if ( ! $this->config->isInstantEnabled($storeId) || $this->config->makeSeoRequest($storeId)) {
                     $documents = $this->algoliaHelper->getSearchResult($algoliaQuery, $storeId);
                 }
 
@@ -154,7 +156,9 @@ class Algolia implements AdapterInterface
 
     /**
      * @param  RequestInterface $request
+     *
      * @throws \Zend_Db_Exception
+     *
      * @return array
      */
     public function getNativeQueryData($request)
@@ -166,7 +170,7 @@ class Algolia implements AdapterInterface
 
         return [
             'documents' => $documents,
-            'table' => $table
+            'table' => $table,
         ];
     }
 
@@ -174,16 +178,16 @@ class Algolia implements AdapterInterface
      * Checks if Algolia is properly configured and enabled
      *
      * @param  int     $storeId
-     * @return boolean
+     *
+     * @return bool
      */
     private function isAllowed($storeId)
     {
-        return (
+        return
             $this->config->getApplicationID($storeId)
             && $this->config->getAPIKey($storeId)
             && $this->config->isEnabledFrontEnd($storeId)
-            && $this->config->makeSeoRequest($storeId)
-        );
+            && $this->config->makeSeoRequest($storeId);
     }
 
     /**
@@ -224,10 +228,10 @@ class Algolia implements AdapterInterface
         return 'storeApiDocuments';
     }
 
-    /** @return boolean */
+    /** @return bool */
     private function isSearch()
     {
-        return ($this->request->getFullActionName() === 'catalogsearch_result_index');
+        return $this->request->getFullActionName() === 'catalogsearch_result_index';
     }
 
     /**
@@ -235,15 +239,14 @@ class Algolia implements AdapterInterface
      *
      * @param  int     $storeId
      *
-     * @return boolean
+     * @return bool
      */
     private function isReplaceCategory($storeId)
     {
-        return (
+        return
             $this->request->getControllerName() === 'category'
             && $this->config->replaceCategories($storeId) === true
-            && $this->config->isInstantEnabled($storeId) === true
-        );
+            && $this->config->isInstantEnabled($storeId) === true;
     }
 
     /**
@@ -251,14 +254,13 @@ class Algolia implements AdapterInterface
      *
      * @param  int      $storeId
      *
-     * @return boolean
+     * @return bool
      */
     private function isReplaceAdvancedSearch($storeId)
     {
-        return (
+        return
             $this->request->getFullActionName() === 'catalogsearch_advanced_result'
-            && $this->config->isInstantEnabled($storeId) === true
-        );
+            && $this->config->isInstantEnabled($storeId) === true;
     }
 
     private function getDocument20($document)
@@ -278,9 +280,10 @@ class Algolia implements AdapterInterface
      *
      * @param Table $table
      *
+     * @throws \Zend_Db_Exception
+     *
      * @return array
      *
-     * @throws \Zend_Db_Exception
      */
     private function getDocuments(Table $table)
     {

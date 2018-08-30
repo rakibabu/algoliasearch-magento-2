@@ -120,9 +120,9 @@ class Configuration extends Algolia implements CollectionDataSourceInterface
 
                 if ($refinementKey !== null) {
                     $refinementValue = $query;
-                    $query = "";
+                    $query = '';
                 } else {
-                    $refinementKey = "";
+                    $refinementKey = '';
                 }
             }
         }
@@ -256,7 +256,7 @@ class Configuration extends Algolia implements CollectionDataSourceInterface
         }
 
         $lastOrder = $this->getLastOrder();
-        if (!$lastOrder) {
+        if ( ! $lastOrder) {
             return $ids;
         }
 

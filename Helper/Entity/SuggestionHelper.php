@@ -104,7 +104,7 @@ class SuggestionHelper
         $suggestions = [];
 
         foreach ($collection as $suggestion) {
-            if (strlen($suggestion['query_text']) >= 3) {
+            if (mb_strlen($suggestion['query_text']) >= 3) {
                 $suggestions[] = $suggestion['query_text'];
             }
         }

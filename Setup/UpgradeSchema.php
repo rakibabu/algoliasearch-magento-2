@@ -291,7 +291,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         /* CREATE QUEUE DB TABLE */
 
-        if (!$context->getVersion() || version_compare($context->getVersion(), '1.0.0') < 0) {
+        if ( ! $context->getVersion() || version_compare($context->getVersion(), '1.0.0') < 0) {
             $connection = $setup->getConnection();
             $table = $connection->newTable($setup->getTable('algoliasearch_queue'));
 
@@ -346,7 +346,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $table->addColumn('id', $table::TYPE_INTEGER, 20, [
                 'identity' => true,
                 'nullable' => false,
-                'primary' => true
+                'primary' => true,
             ]);
             $table->addColumn('started', $table::TYPE_DATETIME, null, ['nullable' => false]);
             $table->addColumn('duration', $table::TYPE_INTEGER, 20, ['nullable' => false]);

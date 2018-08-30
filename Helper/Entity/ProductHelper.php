@@ -110,7 +110,7 @@ class ProductHelper
             [
                 'options' =>[
                     'shouldRemovePubDir' => $this->configHelper->shouldRemovePubDirectory(),
-                ]
+                ],
             ]
         );
     }
@@ -122,7 +122,7 @@ class ProductHelper
 
     public function getAllAttributes($addEmptyRow = false)
     {
-        if (!isset($this->productAttributes)) {
+        if ( ! isset($this->productAttributes)) {
             $this->productAttributes = [];
 
             $allAttributes = $this->eavConfig->getEntityAttributeCodes('catalog_product');
@@ -498,8 +498,10 @@ class ProductHelper
      * Returns all parent product IDs, e.g. when simple product is part of configurable or bundle
      *
      * @param array $productIds
-     * @return array
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @return array
      */
     public function getParentProductIds(array $productIds)
     {
@@ -514,8 +516,10 @@ class ProductHelper
     /**
      * Returns composite product type instances
      *
-     * @return AbstractType[]
      * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @return AbstractType[]
+     *
      * @see \Magento\Catalog\Model\Indexer\Product\Flat\AbstractAction::_getProductTypeInstances
      */
     private function getCompositeTypes()
@@ -527,6 +531,7 @@ class ProductHelper
                 $this->compositeTypes[$typeId] = $this->productType->factory($productEmulator);
             }
         }
+
         return $this->compositeTypes;
     }
 
@@ -575,8 +580,8 @@ class ProductHelper
                 $path = [];
 
                 foreach ($category->getPathIds() as $treeCategoryId) {
-                    if (!$this->configHelper->showCatsNotIncludedInNavigation($storeId)
-                        && !$this->categoryHelper->isCategoryVisibleInMenu($treeCategoryId, $storeId)) {
+                    if ( ! $this->configHelper->showCatsNotIncludedInNavigation($storeId)
+                        && ! $this->categoryHelper->isCategoryVisibleInMenu($treeCategoryId, $storeId)) {
                         // If the category should not be included in menu - skip it
                         $path[] = null;
                         continue;
@@ -712,7 +717,7 @@ class ProductHelper
 
             /** @var AttributeResource $attributeResource */
             $attributeResource = $resource->getAttribute($attribute['attribute']);
-            if (!$attributeResource) {
+            if ( ! $attributeResource) {
                 continue;
             }
 
@@ -816,7 +821,7 @@ class ProductHelper
     ) {
         $valueText = null;
 
-        if (!is_array($value)) {
+        if ( ! is_array($value)) {
             $valueText = $product->getAttributeText($attribute['attribute']);
         }
 
@@ -840,7 +845,7 @@ class ProductHelper
 
         foreach ($this->getAdditionalAttributes() as $attribute) {
             if ($attribute['searchable'] === '1') {
-                if (!isset($attribute['order']) || $attribute['order'] === 'ordered') {
+                if ( ! isset($attribute['order']) || $attribute['order'] === 'ordered') {
                     $searchableAttributes[] = $attribute['attribute'];
                 } else {
                     $searchableAttributes[] = 'unordered(' . $attribute['attribute'] . ')';
@@ -918,7 +923,7 @@ class ProductHelper
             }
         }
 
-        if ($this->configHelper->replaceCategories($storeId) && !in_array('categories', $attributesForFaceting, true)) {
+        if ($this->configHelper->replaceCategories($storeId) && ! in_array('categories', $attributesForFaceting, true)) {
             $attributesForFaceting[] = 'categories';
         }
 
@@ -931,11 +936,11 @@ class ProductHelper
 
         $allIndices = $this->algoliaHelper->listIndexes();
         foreach ($allIndices['items'] as $indexInfo) {
-            if (strpos($indexInfo['name'], $indexName) !== 0 || $indexInfo['name'] === $indexName) {
+            if (mb_strpos($indexInfo['name'], $indexName) !== 0 || $indexInfo['name'] === $indexName) {
                 continue;
             }
 
-            if (strpos($indexInfo['name'], '_tmp') === false && in_array($indexInfo['name'], $replicas) === false) {
+            if (mb_strpos($indexInfo['name'], '_tmp') === false && in_array($indexInfo['name'], $replicas) === false) {
                 $indicesToDelete[] = $indexInfo['name'];
             }
         }
@@ -958,7 +963,7 @@ class ProductHelper
         $rules = [];
         $facets = $this->configHelper->getFacets();
         foreach ($facets as $facet) {
-            if (!array_key_exists('create_rule', $facet) || $facet['create_rule'] !== '1') {
+            if ( ! array_key_exists('create_rule', $facet) || $facet['create_rule'] !== '1') {
                 continue;
             }
 
@@ -976,10 +981,10 @@ class ProductHelper
                     'params' => [
                         'automaticFacetFilters' => [$attribute],
                         'query' => [
-                            'remove' => ['{facet:' . $attribute . '}']
-                        ]
+                            'remove' => ['{facet:' . $attribute . '}'],
+                        ],
                     ],
-                ]
+                ],
             ];
         }
 

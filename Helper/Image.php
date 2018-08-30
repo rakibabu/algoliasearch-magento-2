@@ -14,6 +14,7 @@ class Image extends \Magento\Catalog\Helper\Image
 
     /**
      * Image constructor.
+     *
      * @param Context $context
      * @param ImageFactory $productImageFactory
      * @param Repository $assetRepo
@@ -33,7 +34,7 @@ class Image extends \Magento\Catalog\Helper\Image
         $this->logger = $logger;
 
         $this->options = array_merge([
-            'shouldRemovePubDir' => false
+            'shouldRemovePubDir' => false,
         ], $options);
     }
 
@@ -64,7 +65,7 @@ class Image extends \Magento\Catalog\Helper\Image
     {
         $model = $this->_getModel();
         $baseFile = $model->getBaseFile();
-        if (!$baseFile) {
+        if ( ! $baseFile) {
             if ($this->getImageFile()) {
                 $model->setBaseFile($this->getImageFile());
             } else {

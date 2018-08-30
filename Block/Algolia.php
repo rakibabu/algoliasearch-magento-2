@@ -187,7 +187,7 @@ class Algolia extends Template implements CollectionDataSourceInterface
 
         $routeParams = [
             $urlParamName => $continueUrl,
-            '_secure' => $this->algoliaHelper->getRequest()->isSecure()
+            '_secure' => $this->algoliaHelper->getRequest()->isSecure(),
         ];
 
         if ($additional !== []) {
