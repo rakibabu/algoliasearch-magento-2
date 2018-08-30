@@ -2,9 +2,9 @@
 
 namespace Algolia\AlgoliaSearch\Adapter;
 
-use AlgoliaSearch\AlgoliaConnectionException;
 use Algolia\AlgoliaSearch\Helper\ConfigHelper;
 use Algolia\AlgoliaSearch\Helper\Data as AlgoliaHelper;
+use AlgoliaSearch\AlgoliaConnectionException;
 use Magento\CatalogSearch\Helper\Data;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\ResourceConnection;
@@ -131,7 +131,6 @@ class Algolia implements AdapterInterface
                 }, $documents);
 
                 $table = $temporaryStorage->{$storeDocumentsMethod}($apiDocuments);
-
             } catch (AlgoliaConnectionException $e) {
                 $useNative = true;
             }
@@ -154,10 +153,8 @@ class Algolia implements AdapterInterface
     }
 
     /**
-     * Get native query documents
-     *
      * @param  RequestInterface $request
-     *
+     * @throws \Zend_Db_Exception
      * @return array
      */
     public function getNativeQueryData($request)
@@ -177,7 +174,6 @@ class Algolia implements AdapterInterface
      * Checks if Algolia is properly configured and enabled
      *
      * @param  int     $storeId
-     *
      * @return boolean
      */
     private function isAllowed($storeId)

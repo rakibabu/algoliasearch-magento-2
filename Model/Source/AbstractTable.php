@@ -28,7 +28,6 @@ abstract class AbstractTable extends AbstractFieldArray
         ConfigHelper $configHelper,
         array $data = []
     ) {
-    
         $this->config = $configHelper;
         $this->productHelper = $producthelper;
         $this->categoryHelper = $categoryHelper;

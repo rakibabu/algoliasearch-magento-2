@@ -3,15 +3,15 @@
 namespace Algolia\AlgoliaSearch\Helper\Entity\Product;
 
 use Algolia\AlgoliaSearch\Helper\ConfigHelper;
+use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
+use Magento\CatalogRule\Model\ResourceModel\Rule;
+use Magento\Customer\Model\Group;
 use Magento\Customer\Model\ResourceModel\Group\CollectionFactory;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
-use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Store\Model\Store;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
-use Magento\Customer\Model\Group;
-use Magento\CatalogRule\Model\ResourceModel\Rule;
 
 class PriceManager
 {
@@ -199,12 +199,12 @@ class PriceManager
             $groupId = (int) $group->getData('customer_group_id');
             $specialPrices[$groupId] = [];
 
-            if ($product->getTypeId() == 'configurable')  {
+            if ($product->getTypeId() == 'configurable') {
                 $childrenPrices = [];
                 /** @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable $typeInstance */
                 $typeInstance = $product->getTypeInstance();
                 $children = $typeInstance->getUsedProducts($product);
-                foreach ($children as $child){
+                foreach ($children as $child) {
                     $childPrice = (double) $this->rule->getRulePrice(
                         new \DateTime(),
                         $store->getWebsiteId(),
@@ -308,7 +308,7 @@ class PriceManager
                 if ($customData[$field][$currencyCode]['default'] >
                     $customData[$field][$currencyCode]['group_' . $groupId]) {
                     $original = $customData[$field][$currencyCode]['default_formated'];
-                    $customData[$field][$currencyCode]['group_'.$groupId.'_original_formated'] = $original;
+                    $customData[$field][$currencyCode]['group_' . $groupId . '_original_formated'] = $original;
                 }
             } else {
                 $default = $customData[$field][$currencyCode]['default'];
@@ -354,7 +354,7 @@ class PriceManager
                     if ($customData[$field][$currencyCode]['default'] >
                         $customData[$field][$currencyCode]['group_' . $groupId]) {
                         $original = $customData[$field][$currencyCode]['default_formated'];
-                        $customData[$field][$currencyCode]['group_'.$groupId.'_original_formated'] = $original;
+                        $customData[$field][$currencyCode]['group_' . $groupId . '_original_formated'] = $original;
                     }
                 }
             }
@@ -456,7 +456,7 @@ class PriceManager
             $currencyCode
         );
 
-        return $minFormatted.' - '.$maxFormatted;
+        return $minFormatted . ' - ' . $maxFormatted;
     }
 
     private function handleNonEqualMinMaxPrices(
@@ -487,8 +487,8 @@ class PriceManager
                 $groupId = (int) $group->getData('customer_group_id');
 
                 if ($min !== $max && $min <= $customData[$field][$currencyCode]['group_' . $groupId]) {
-                    $customData[$field][$currencyCode]['group_'.$groupId] = 0;
-                    $customData[$field][$currencyCode]['group_'.$groupId.'_formated'] = $dashedFormat;
+                    $customData[$field][$currencyCode]['group_' . $groupId] = 0;
+                    $customData[$field][$currencyCode]['group_' . $groupId . '_formated'] = $dashedFormat;
                 }
             }
         }
@@ -540,9 +540,9 @@ class PriceManager
 
                 if ($min === $max) {
                     $default = $customData[$field][$currencyCode]['default_formated'];
-                    $customData[$field][$currencyCode]['group_'.$groupId.'_formated'] = $default;
+                    $customData[$field][$currencyCode]['group_' . $groupId . '_formated'] = $default;
                 } else {
-                    $customData[$field][$currencyCode]['group_'.$groupId.'_formated'] = $dashedFormat;
+                    $customData[$field][$currencyCode]['group_' . $groupId . '_formated'] = $dashedFormat;
                 }
             }
         }

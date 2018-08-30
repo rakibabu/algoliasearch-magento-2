@@ -41,9 +41,9 @@ class EnableClickAnalytics extends Value
 
         $ch = curl_init();
 
-        $headers = array();
-        $headers[] = 'X-Algolia-Api-Key: '.$context->apiKey;
-        $headers[] = 'X-Algolia-Application-Id: '.$context->applicationID;
+        $headers = [];
+        $headers[] = 'X-Algolia-Api-Key: ' . $context->apiKey;
+        $headers[] = 'X-Algolia-Application-Id: ' . $context->applicationID;
         $headers[] = 'Content-Type: application/x-www-form-urlencoded';
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
@@ -59,9 +59,8 @@ class EnableClickAnalytics extends Value
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         curl_setopt($ch, CURLOPT_POST, 1);
 
-
         $result = curl_exec($ch);
-        curl_close ($ch);
+        curl_close($ch);
 
         if ($result) {
             $result = json_decode($result);

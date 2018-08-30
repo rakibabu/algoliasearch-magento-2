@@ -58,7 +58,6 @@ class Data
         ManagerInterface $eventManager,
         StoreManagerInterface $storeManager
     ) {
-    
         $this->algoliaHelper = $algoliaHelper;
 
         $this->pageHelper = $pageHelper;
@@ -124,7 +123,7 @@ class Data
 
         $productsIndexName = $this->getIndexName($this->productHelper->getIndexNameSuffix(), $storeId);
         $productsIndexNameTmp = $this->getIndexName($this->productHelper->getIndexNameSuffix(), $storeId, true);
-        
+
         $this->productHelper->setSettings($productsIndexName, $productsIndexNameTmp, $storeId, $useTmpIndex);
 
         $this->setExtraSettings($storeId, $useTmpIndex);
@@ -559,7 +558,7 @@ class Data
             $reviewTableName = $this->resource->getTableName('review_entity_summary');
             $collection
                 ->getSelect()
-                ->columns('(SELECT MAX(rating_summary) FROM ' . $reviewTableName . ' AS o WHERE o.entity_pk_value = e.entity_id AND o.store_id = '.$storeId.') as rating_summary');
+                ->columns('(SELECT MAX(rating_summary) FROM ' . $reviewTableName . ' AS o WHERE o.entity_pk_value = e.entity_id AND o.store_id = ' . $storeId . ') as rating_summary');
         }
 
         $this->eventManager->dispatch(
@@ -599,7 +598,7 @@ class Data
 
                 $this->algoliaHelper->deleteObjects($toRealRemove, $indexName);
 
-                $this->logger->log('Product IDs: '.implode(', ', $toRealRemove));
+                $this->logger->log('Product IDs: ' . implode(', ', $toRealRemove));
                 $this->logger->stop('REMOVE FROM ALGOLIA');
             }
         }
@@ -698,14 +697,14 @@ class Data
                     $this->algoliaHelper->setSettings($indexName, $extraSettings, true);
 
                     if ($section === 'products' && $saveToTmpIndicesToo === true) {
-                        $this->algoliaHelper->setSettings($indexName.'_tmp', $extraSettings, true);
+                        $this->algoliaHelper->setSettings($indexName . '_tmp', $extraSettings, true);
                     }
                 }
             } catch (AlgoliaException $e) {
                 if (strpos($e->getMessage(), 'Invalid object attributes:') === 0) {
                     $error[] = '
-                        Extra settings for "'.$section.'" indices were not saved. 
-                        Error message: "'.$e->getMessage().'"';
+                        Extra settings for "' . $section . '" indices were not saved. 
+                        Error message: "' . $e->getMessage() . '"';
 
                     continue;
                 }
@@ -715,7 +714,7 @@ class Data
         }
 
         if ($error) {
-            throw new AlgoliaException('<br>'.implode('<br> ', $error));
+            throw new AlgoliaException('<br>' . implode('<br> ', $error));
         }
     }
 

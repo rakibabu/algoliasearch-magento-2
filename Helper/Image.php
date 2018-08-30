@@ -83,7 +83,7 @@ class Image extends \Magento\Catalog\Helper\Image
     public function removeDoubleSlashes($url)
     {
         $url = str_replace('//', '/', $url);
-        $url = '/'.$url;
+        $url = '/' . $url;
 
         return $url;
     }

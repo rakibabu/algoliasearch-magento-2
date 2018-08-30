@@ -2,7 +2,6 @@
 
 namespace Algolia\AlgoliaSearch\Helper;
 
-use Algolia\AlgoliaSearch\Helper\Entity\ProductHelper;
 use Algolia\AlgoliaSearch\Helper\Entity\SuggestionHelper;
 use Magento;
 use Magento\Directory\Model\Currency as DirCurrency;
@@ -127,7 +126,6 @@ class ConfigHelper
         Magento\Framework\Event\ManagerInterface $eventManager,
         Magento\Directory\Model\Currency $currencyManager
     ) {
-    
         $this->objectManager = $objectManager;
         $this->configInterface = $configInterface;
         $this->currency = $currency;
@@ -483,9 +481,9 @@ class ConfigHelper
                 foreach ($groupCollection as $group) {
                     $customerGroupId = (int) $group->getData('customer_group_id');
 
-                    $indexNameSuffix = 'group_'.$customerGroupId;
+                    $indexNameSuffix = 'group_' . $customerGroupId;
 
-                    $indexName = $originalIndexName.'_'.$attr['attribute'].'_'.$indexNameSuffix.'_'.$attr['sort'];
+                    $indexName = $originalIndexName . '_' . $attr['attribute'] . '_' . $indexNameSuffix . '_' . $attr['sort'];
                     $sortAttribute = $attr['attribute'] . '.' . $currency . '.' . $indexNameSuffix;
                 }
             } elseif ($attr['attribute'] === 'price') {
@@ -504,7 +502,7 @@ class ConfigHelper
                 }
 
                 $attr['ranking'] = [
-                    $attr['sort'].'('.$sortAttribute.')',
+                    $attr['sort'] . '(' . $sortAttribute . ')',
                     'typo',
                     'geo',
                     'words',
@@ -651,9 +649,9 @@ class ConfigHelper
 
     public function getExtraSettings($section, $storeId = null)
     {
-        $constant = 'EXTRA_SETTINGS_'.mb_strtoupper($section);
+        $constant = 'EXTRA_SETTINGS_' . mb_strtoupper($section);
 
-        $value = $this->configInterface->getValue(constant('self::'.$constant), ScopeInterface::SCOPE_STORE, $storeId);
+        $value = $this->configInterface->getValue(constant('self::' . $constant), ScopeInterface::SCOPE_STORE, $storeId);
 
         return trim($value);
     }
@@ -894,7 +892,7 @@ class ConfigHelper
             ),
         ];
     }
-  
+
     private function addIndexableAttributes(
         $attributes,
         $addedAttributes,

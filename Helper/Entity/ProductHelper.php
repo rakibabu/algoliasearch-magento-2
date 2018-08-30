@@ -2,28 +2,27 @@
 
 namespace Algolia\AlgoliaSearch\Helper\Entity;
 
+use Algolia\AlgoliaSearch\Helper\AlgoliaHelper;
+use Algolia\AlgoliaSearch\Helper\ConfigHelper;
+use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager;
+use Algolia\AlgoliaSearch\Helper\Logger;
 use AlgoliaSearch\AlgoliaException;
 use AlgoliaSearch\Index;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute as AttributeResource;
-use Magento\Directory\Model\Currency;
-use Magento\Framework\DataObject;
-use Magento\Store\Model\Store;
-use Algolia\AlgoliaSearch\Helper\AlgoliaHelper;
-use Algolia\AlgoliaSearch\Helper\ConfigHelper;
-use Algolia\AlgoliaSearch\Helper\Logger;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\Product\Type\AbstractType;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute as AttributeResource;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\CatalogInventory\Helper\Stock;
 use Magento\Directory\Model\Currency as CurrencyHelper;
 use Magento\Eav\Model\Config;
+use Magento\Framework\DataObject;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager;
 
 class ProductHelper
 {
@@ -912,7 +911,7 @@ class ProductHelper
             } else {
                 $attribute = $facet['attribute'];
                 if (array_key_exists('searchable', $facet) && $facet['searchable'] === '1') {
-                    $attribute = 'searchable('.$attribute.')';
+                    $attribute = 'searchable(' . $attribute . ')';
                 }
 
                 $attributesForFaceting[] = $attribute;
@@ -966,18 +965,18 @@ class ProductHelper
             $attribute = $facet['attribute'];
 
             $rules[] = [
-                'objectID' => 'filter_'.$attribute,
-                'description' => 'Filter facet "'.$attribute.'"',
+                'objectID' => 'filter_' . $attribute,
+                'description' => 'Filter facet "' . $attribute . '"',
                 'condition' => [
                     'anchoring' => 'contains',
-                    'pattern' => '{facet:'.$attribute.'}',
+                    'pattern' => '{facet:' . $attribute . '}',
                     'context' => 'magento_filters',
                 ],
                 'consequence' => [
                     'params' => [
                         'automaticFacetFilters' => [$attribute],
                         'query' => [
-                            'remove' => ['{facet:'.$attribute.'}']
+                            'remove' => ['{facet:' . $attribute . '}']
                         ]
                     ],
                 ]

@@ -17,7 +17,7 @@ class ConfigTest extends TestCase
 
         $this->algoliaHelper->waitLastTask();
 
-        $indexSettings = $this->algoliaHelper->getIndex($this->indexPrefix.'default_products')->getSettings();
+        $indexSettings = $this->algoliaHelper->getIndex($this->indexPrefix . 'default_products')->getSettings();
 
         $this->assertEquals(count($facets), count($indexSettings['attributesForFaceting']));
 
@@ -45,7 +45,7 @@ class ConfigTest extends TestCase
 
         $this->algoliaHelper->waitLastTask();
 
-        $index = $this->algoliaHelper->getIndex($this->indexPrefix.'default_products');
+        $index = $this->algoliaHelper->getIndex($this->indexPrefix . 'default_products');
 
         $matchedRules = [];
 
@@ -91,7 +91,7 @@ class ConfigTest extends TestCase
 
         $this->algoliaHelper->waitLastTask();
 
-        $indexSettings = $this->algoliaHelper->getIndex($this->indexPrefix.'default_products')->getSettings();
+        $indexSettings = $this->algoliaHelper->getIndex($this->indexPrefix . 'default_products')->getSettings();
 
         $this->assertEquals(2, count($indexSettings['attributesForFaceting']));
 
@@ -112,7 +112,7 @@ class ConfigTest extends TestCase
 
         $this->algoliaHelper->waitLastTask();
 
-        $indexSettings = $this->algoliaHelper->getIndex($this->indexPrefix.'default_products')->getSettings();
+        $indexSettings = $this->algoliaHelper->getIndex($this->indexPrefix . 'default_products')->getSettings();
 
         $this->assertEquals(3, count($indexSettings['attributesForFaceting']));
 
@@ -193,9 +193,9 @@ class ConfigTest extends TestCase
         $this->setConfig('algoliasearch_advanced/advanced/customer_groups_enable', $enableCustomGroups);
 
         $sortingIndicesWithRankingWhichShouldBeCreated = [
-            $this->indexPrefix.'default_products_price_'.$priceAttribute.'_asc' => 'asc(price.USD.'.$priceAttribute.')',
-            $this->indexPrefix.'default_products_price_'.$priceAttribute.'_desc' => 'desc(price.USD.'.$priceAttribute.')',
-            $this->indexPrefix.'default_products_created_at_desc' => 'desc(created_at)',
+            $this->indexPrefix . 'default_products_price_' . $priceAttribute . '_asc' => 'asc(price.USD.' . $priceAttribute . ')',
+            $this->indexPrefix . 'default_products_price_' . $priceAttribute . '_desc' => 'desc(price.USD.' . $priceAttribute . ')',
+            $this->indexPrefix . 'default_products_created_at_desc' => 'desc(created_at)',
         ];
 
         /** @var Data $helper */
@@ -228,7 +228,7 @@ class ConfigTest extends TestCase
         $sections = ['products', 'categories', 'pages', 'suggestions'];
 
         foreach ($sections as $section) {
-            $indexName = $this->indexPrefix.'default_'.$section;
+            $indexName = $this->indexPrefix . 'default_' . $section;
 
             $this->algoliaHelper->setSettings($indexName, ['exactOnSingleWordQuery' => 'attribute']);
         }
@@ -236,7 +236,7 @@ class ConfigTest extends TestCase
         $this->algoliaHelper->waitLastTask();
 
         foreach ($sections as $section) {
-            $indexName = $this->indexPrefix.'default_'.$section;
+            $indexName = $this->indexPrefix . 'default_' . $section;
 
             $currentSettings = $this->algoliaHelper->getIndex($indexName)->getSettings();
 
@@ -245,14 +245,14 @@ class ConfigTest extends TestCase
         }
 
         foreach ($sections as $section) {
-            $this->setConfig('algoliasearch_extra_settings/extra_settings/'.$section.'_extra_settings', '{"exactOnSingleWordQuery":"word"}');
+            $this->setConfig('algoliasearch_extra_settings/extra_settings/' . $section . '_extra_settings', '{"exactOnSingleWordQuery":"word"}');
         }
 
         $helper->saveConfigurationToAlgolia(1);
         $this->algoliaHelper->waitLastTask();
 
         foreach ($sections as $section) {
-            $indexName = $this->indexPrefix.'default_'.$section;
+            $indexName = $this->indexPrefix . 'default_' . $section;
 
             $currentSettings = $this->algoliaHelper->getIndex($indexName)->getSettings();
 
@@ -269,7 +269,7 @@ class ConfigTest extends TestCase
         $sections = ['products', 'categories', 'pages', 'suggestions'];
 
         foreach ($sections as $section) {
-            $this->setConfig('algoliasearch_extra_settings/extra_settings/'.$section.'_extra_settings', '{"foo":"bar"}');
+            $this->setConfig('algoliasearch_extra_settings/extra_settings/' . $section . '_extra_settings', '{"foo":"bar"}');
         }
 
         try {

@@ -317,7 +317,7 @@ class AlgoliaHelper extends AbstractHelper
         $this->resetCredentialsFromConfig();
 
         if (!isset($this->client)) {
-            $msg = 'Operation '.$methodName.' could not be performed because Algolia credentials were not provided.';
+            $msg = 'Operation ' . $methodName . ' could not be performed because Algolia credentials were not provided.';
             throw new AlgoliaException($msg);
         }
     }
@@ -363,13 +363,13 @@ class AlgoliaHelper extends AbstractHelper
 
             if ($object === false) {
                 $longestAttribute = $this->getLongestAttribute($previousObject);
-                $modifiedIds[] = $indexName.' 
-                    - ID '.$previousObject['objectID'].' - skipped - longest attribute: '.$longestAttribute;
+                $modifiedIds[] = $indexName . ' 
+                    - ID ' . $previousObject['objectID'] . ' - skipped - longest attribute: ' . $longestAttribute;
 
                 unset($objects[$key]);
                 continue;
             } elseif ($previousObject !== $object) {
-                $modifiedIds[] = $indexName.' - ID '.$previousObject['objectID'].' - truncated';
+                $modifiedIds[] = $indexName . ' - ID ' . $previousObject['objectID'] . ' - truncated';
             }
 
             $object = $this->castRecord($object);
@@ -381,8 +381,8 @@ class AlgoliaHelper extends AbstractHelper
             $errorMessage = 'Algolia reindexing: 
                 You have some records which are too big to be indexed in Algolia. 
                 They have either been truncated 
-                (removed attributes: '.implode(', ', $this->potentiallyLongAttributes).') 
-                or skipped completely: '.$separator.implode($separator, $modifiedIds);
+                (removed attributes: ' . implode(', ', $this->potentiallyLongAttributes) . ') 
+                or skipped completely: ' . $separator . implode($separator, $modifiedIds);
 
             if (php_sapi_name() === 'cli') {
                 $this->consoleOutput->writeln($errorMessage);

@@ -3,18 +3,18 @@
 namespace Algolia\AlgoliaSearch\Helper\Entity;
 
 use Algolia\AlgoliaSearch\Helper\ConfigHelper;
+use Algolia\AlgoliaSearch\Helper\Image;
+use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\Category as MagentoCategory;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\ResourceModel\Category as CategoryResource;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
-use Magento\Catalog\Model\Category as MagentoCategory;
 use Magento\Eav\Model\Config;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\DataObject;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Algolia\AlgoliaSearch\Helper\Image;
-use Magento\Catalog\Model\Category;
-use Magento\Framework\DataObject;
 
 class CategoryHelper
 {
@@ -418,7 +418,7 @@ class CategoryHelper
 
         if ($attribute = $resource->getAttribute('is_active')) {
             $columnId = $this->getCorrectIdColumn();
-            $key = new \Zend_Db_Expr("CONCAT(backend.store_id, '-', backend.".$columnId.")");
+            $key = new \Zend_Db_Expr("CONCAT(backend.store_id, '-', backend." . $columnId . ")");
 
             $connection = $this->resourceConnection->getConnection();
             $select = $connection->select()
@@ -428,12 +428,12 @@ class CategoryHelper
                                  )
                                  ->join(
                                      ['category' => $resource->getTable('catalog_category_entity')],
-                                     'backend.'.$columnId.' = category.'.$columnId,
+                                     'backend.' . $columnId . ' = category.' . $columnId,
                                      []
                                  )
                                  ->where('backend.attribute_id = ?', $attribute->getAttributeId())
                                  ->order('backend.store_id')
-                                 ->order('backend.'.$columnId);
+                                 ->order('backend.' . $columnId);
 
             $this->activeCategories = $connection->fetchAssoc($select);
         }
@@ -462,7 +462,7 @@ class CategoryHelper
 
             if ($attribute = $categoryModel->getAttribute('name')) {
                 $columnId = $this->getCorrectIdColumn();
-                $expression = new \Zend_Db_Expr("CONCAT(backend.store_id, '-', backend.".$columnId.")");
+                $expression = new \Zend_Db_Expr("CONCAT(backend.store_id, '-', backend." . $columnId . ")");
 
                 $connection = $this->resourceConnection->getConnection();
                 $select = $connection->select()
@@ -472,7 +472,7 @@ class CategoryHelper
                                      )
                                      ->join(
                                          ['category' => $categoryModel->getTable('catalog_category_entity')],
-                                         'backend.'.$columnId.' = category.'.$columnId,
+                                         'backend.' . $columnId . ' = category.' . $columnId,
                                          []
                                      )
                                      ->where('backend.attribute_id = ?', $attribute->getAttributeId())
@@ -529,7 +529,7 @@ class CategoryHelper
 
     public function isCategoryVisibleInMenu($categoryId, $storeId)
     {
-        $key = $categoryId.' - '.$storeId;
+        $key = $categoryId . ' - ' . $storeId;
         if (isset($this->isCategoryVisibleInMenuCache[$key])) {
             return $this->isCategoryVisibleInMenuCache[$key];
         }
