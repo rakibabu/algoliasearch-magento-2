@@ -15,6 +15,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Algolia\AlgoliaSearch\Helper\Image;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\DataObject;
+use Magento\Framework\Module\Manager;
 
 class CategoryHelper
 {
@@ -50,6 +51,7 @@ class CategoryHelper
     private $rootCategoryId = -1;
     private $activeCategories;
     private $categoryNames;
+    private $moduleManager;
 
     /**
      * CategoryHelper constructor.
@@ -72,7 +74,8 @@ class CategoryHelper
         CategoryCollection $categoryCollection,
         Image $imageHelper,
         CategoryResource $categoryResource,
-        CategoryFactory $categoryFactory
+        CategoryFactory $categoryFactory,
+        Manager $moduleManager
     ) {
         $this->eventManager = $eventManager;
         $this->storeManager = $storeManager;
@@ -83,6 +86,7 @@ class CategoryHelper
         $this->imageHelper = $imageHelper;
         $this->categoryResource = $categoryResource;
         $this->categoryFactory = $categoryFactory;
+        $this->moduleManager = $moduleManager;
     }
 
     public function getIndexNameSuffix()
@@ -247,14 +251,14 @@ class CategoryHelper
         }
 
         $data = [
-            'objectID'      => $category->getId(),
-            'name'          => $category->getName(),
-            'path'          => $path,
-            'level'         => $category->getLevel(),
-            'url'           => $this->getUrl($category),
+            'objectID' => $category->getId(),
+            'name' => $category->getName(),
+            'path' => $path,
+            'level' => $category->getLevel(),
+            'url' => $this->getUrl($category),
             'include_in_menu' => $category->getIncludeInMenu(),
-            '_tags'         => ['category'],
-            'popularity'    => 1,
+            '_tags' => ['category'],
+            'popularity' => 1,
             'product_count' => $category->getProductCount(),
         ];
 
@@ -579,7 +583,7 @@ class CategoryHelper
         $edition = $this->configHelper->getMagentoEdition();
         $version = $this->configHelper->getMagentoVersion();
 
-        if ($edition !== 'Community' && version_compare($version, '2.1.0', '>=')) {
+        if ($edition !== 'Community' && version_compare($version, '2.1.0', '>=') && $this->moduleManager->isEnabled('Magento_Staging')) {
             $this->idColumn = 'row_id';
         }
 

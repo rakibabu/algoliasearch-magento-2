@@ -75,6 +75,11 @@ class ProductHelper
         'in_stock',
     ];
 
+    private $attributesToIndexAsArray = [
+        'sku',
+        'color',
+    ];
+
     public function __construct(
         Config $eavConfig,
         ConfigHelper $configHelper,
@@ -184,8 +189,12 @@ class ProductHelper
         return false;
     }
 
-    public function getProductCollectionQuery($storeId, $productIds = null, $onlyVisible = true)
-    {
+    public function getProductCollectionQuery(
+        $storeId,
+        $productIds = null,
+        $onlyVisible = true,
+        $includeNotVisibleIndividually = false
+    ) {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $products */
         $products = $this->objectManager->create('Magento\Catalog\Model\ResourceModel\Product\Collection');
 
@@ -195,13 +204,16 @@ class ProductHelper
             ->distinct(true);
 
         if ($onlyVisible) {
-            $products = $products
-                ->addAttributeToFilter('visibility', ['in' => $this->visibility->getVisibleInSiteIds()])
-                ->addAttributeToFilter('status', ['=' => Status::STATUS_ENABLED]);
-        }
+            $products = $products->addAttributeToFilter('status', ['=' => Status::STATUS_ENABLED]);
 
-        if ($onlyVisible && $this->configHelper->getShowOutOfStock($storeId) === false) {
-            $this->stockHelper->addInStockFilterToCollection($products);
+            if ($includeNotVisibleIndividually === false) {
+                $products = $products
+                    ->addAttributeToFilter('visibility', ['in' => $this->visibility->getVisibleInSiteIds()]);
+            }
+
+            if ($this->configHelper->getShowOutOfStock($storeId) === false) {
+                $this->stockHelper->addInStockFilterToCollection($products);
+            }
         }
 
         /* @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
@@ -233,7 +245,12 @@ class ProductHelper
         );
         $this->eventManager->dispatch(
             'algolia_after_products_collection_build',
-            ['store' => $storeId, 'collection' => $products]
+            [
+                'store' => $storeId, 
+                'collection' => $products,
+                'only_visible' => $onlyVisible,
+                'include_not_visible_individually' => $includeNotVisibleIndividually
+            ]
         );
 
         return $products;
@@ -474,12 +491,14 @@ class ProductHelper
             }
 
             if (count($ids)) {
+                $storeId = $product->getStoreId();
+
                 $onlyVisible = false;
-                if ($this->configHelper->indexOutOfStockOptions($product->getStoreId()) === false) {
+                if ($this->configHelper->indexOutOfStockOptions($storeId) === false) {
                     $onlyVisible = true;
                 }
 
-                $subProducts = $this->getProductCollectionQuery($product->getStoreId(), $ids, $onlyVisible)->load();
+                $subProducts = $this->getProductCollectionQuery($storeId, $ids, $onlyVisible, true)->load();
             }
         }
 
@@ -538,6 +557,7 @@ class ProductHelper
 
         $categories = [];
         $categoriesWithPath = [];
+        $categoryIds = [];
 
         $_categoryIds = $product->getCategoryIds();
 
@@ -576,6 +596,7 @@ class ProductHelper
 
                     $name = $this->categoryHelper->getCategoryName($treeCategoryId, $storeId);
                     if ($name) {
+                        $categoryIds[] = $treeCategoryId;
                         $path[] = $name;
                     }
                 }
@@ -599,6 +620,7 @@ class ProductHelper
 
         $customData['categories'] = $hierarchicalCategories;
         $customData['categories_without_path'] = $categories;
+        $customData['categoryIds'] = array_values(array_unique($categoryIds));
 
         return $customData;
     }
@@ -695,7 +717,9 @@ class ProductHelper
     private function addAdditionalAttributes($customData, $additionalAttributes, Product $product, $subProducts)
     {
         foreach ($additionalAttributes as $attribute) {
-            if (isset($customData[$attribute['attribute']])) {
+            $attributeName = $attribute['attribute'];
+
+            if (isset($customData[$attributeName]) && $attributeName !== 'sku') {
                 continue;
             }
 
@@ -703,18 +727,21 @@ class ProductHelper
             $resource = $product->getResource();
 
             /** @var AttributeResource $attributeResource */
-            $attributeResource = $resource->getAttribute($attribute['attribute']);
+            $attributeResource = $resource->getAttribute($attributeName);
             if (!$attributeResource) {
                 continue;
             }
 
             $attributeResource = $attributeResource->setData('store_id', $product->getStoreId());
 
-            $value = $product->getData($attribute['attribute']);
+            $value = $product->getData($attributeName);
 
             if ($value !== null) {
                 $customData = $this->addNonNullValue($customData, $value, $product, $attribute, $attributeResource);
-                continue;
+
+                if (!in_array($attributeName, $this->attributesToIndexAsArray, true)) {
+                    continue;
+                }
             }
 
             $type = $product->getTypeId();
@@ -730,15 +757,21 @@ class ProductHelper
 
     private function addNullValue($customData, $subProducts, $attribute, AttributeResource $attributeResource)
     {
+        $attributeName = $attribute['attribute'];
+
         $values = [];
         $subProductImages = [];
 
+        if (isset($customData[$attributeName])) {
+            $values[] = $customData[$attributeName];
+        }
+
         /** @var Product $subProduct */
         foreach ($subProducts as $subProduct) {
-            $value = $subProduct->getData($attribute['attribute']);
+            $value = $subProduct->getData($attributeName);
             if ($value) {
                 /** @var string|array $valueText */
-                $valueText = $subProduct->getAttributeText($attribute['attribute']);
+                $valueText = $subProduct->getAttributeText($attributeName);
 
                 $values = array_merge($values, $this->getValues($valueText, $subProduct, $attributeResource));
                 $subProductImages = $this->addSubProductImage($subProductImages, $attribute, $subProduct, $valueText);
@@ -746,7 +779,7 @@ class ProductHelper
         }
 
         if (is_array($values) && count($values) > 0) {
-            $customData[$attribute['attribute']] = array_values(array_unique($values));
+            $customData[$attributeName] = array_values(array_unique($values));
         }
 
         if (count($subProductImages) > 0) {
@@ -913,6 +946,9 @@ class ProductHelper
         if ($this->configHelper->replaceCategories($storeId) && !in_array('categories', $attributesForFaceting, true)) {
             $attributesForFaceting[] = 'categories';
         }
+
+        // Used for merchandising
+        $attributesForFaceting[] = 'categoryIds';
 
         return $attributesForFaceting;
     }
