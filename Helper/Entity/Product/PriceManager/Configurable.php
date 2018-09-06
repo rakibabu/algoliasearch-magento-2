@@ -10,8 +10,8 @@ class Configurable extends ProductWithChildren
         /** @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable $typeInstance */
         $typeInstance = $product->getTypeInstance();
         $children = $typeInstance->getUsedProducts($product);
-        foreach ($children as $child){
-            $childrenPrices[] = (double) $this->rule->getRulePrice(
+        foreach ($children as $child) {
+            $childrenPrices[] = (float) $this->rule->getRulePrice(
                 new \DateTime(),
                 $this->store->getWebsiteId(),
                 $groupId,

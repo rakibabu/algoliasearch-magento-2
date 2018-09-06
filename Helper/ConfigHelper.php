@@ -476,10 +476,10 @@ class ConfigHelper
                 foreach ($groupCollection as $group) {
                     $customerGroupId = (int) $group->getData('customer_group_id');
 
-                    $groupIndexNameSuffix = 'group_'.$customerGroupId;
+                    $groupIndexNameSuffix = 'group_' . $customerGroupId;
 
                     $groupIndexName =
-                        $originalIndexName.'_'.$attr['attribute'].'_'.$groupIndexNameSuffix.'_'.$attr['sort'];
+                        $originalIndexName . '_' . $attr['attribute'] . '_' . $groupIndexNameSuffix . '_' . $attr['sort'];
                     $groupSortAttribute = $attr['attribute'] . '.' . $currency . '.' . $groupIndexNameSuffix;
 
                     $newAttr = [];
@@ -493,7 +493,7 @@ class ConfigHelper
                     }
 
                     $newAttr['ranking'] = [
-                        $newAttr['sort'].'('.$groupSortAttribute.')',
+                        $newAttr['sort'] . '(' . $groupSortAttribute . ')',
                         'typo',
                         'geo',
                         'words',
@@ -522,7 +522,7 @@ class ConfigHelper
                 }
 
                 $attrs[$key]['ranking'] = [
-                    $attr['sort'].'('.$sortAttribute.')',
+                    $attr['sort'] . '(' . $sortAttribute . ')',
                     'typo',
                     'geo',
                     'words',
@@ -532,7 +532,6 @@ class ConfigHelper
                     'exact',
                     'custom',
                 ];
-
             }
         }
 
@@ -541,7 +540,7 @@ class ConfigHelper
         if (count($attributesToAdd) > 0) {
             foreach ($attrs as $key => $attr) {
                 if ($attr['attribute'] == 'price' && isset($attributesToAdd[$attr['sort']])) {
-                    $attrsToReturn = array_merge($attrsToReturn ,$attributesToAdd[$attr['sort']]);
+                    $attrsToReturn = array_merge($attrsToReturn, $attributesToAdd[$attr['sort']]);
                 } else {
                     $attrsToReturn[] = $attr;
                 }

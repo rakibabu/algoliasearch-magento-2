@@ -3,16 +3,15 @@
 namespace Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager;
 
 use Algolia\AlgoliaSearch\Helper\ConfigHelper;
-use Magento\Catalog\Model\Product;
-use Magento\Customer\Model\ResourceModel\Group\CollectionFactory;
-use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Catalog\Helper\Data as CatalogHelper;
-use Magento\Store\Model\Store;
-use Magento\Tax\Helper\Data as TaxHelper;
-use Magento\Tax\Model\Config as TaxConfig;
-use Magento\Customer\Model\Group;
+use Magento\Catalog\Model\Product;
 use Magento\CatalogRule\Model\ResourceModel\Rule;
 use Magento\Customer\Api\Data\GroupInterface;
+use Magento\Customer\Model\Group;
+use Magento\Customer\Model\ResourceModel\Group\CollectionFactory;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Tax\Helper\Data as TaxHelper;
+use Magento\Tax\Model\Config as TaxConfig;
 
 abstract class ProductWithoutChildren
 {
@@ -136,7 +135,7 @@ abstract class ProductWithoutChildren
 
     protected function getTaxPrice($product, $amount, $withTax)
     {
-        return (double) $this->catalogHelper->getTaxPrice(
+        return (float) $this->catalogHelper->getTaxPrice(
             $product,
             $amount,
             $withTax,
@@ -191,7 +190,6 @@ abstract class ProductWithoutChildren
         if (!is_null($product->getTierPrices())) {
             $productTierPrices = $product->getTierPrices();
             foreach ($productTierPrices as $productTierPrice) {
-
                 if (!isset($tierPrices[$productTierPrice->getCustomerGroupId()])) {
                     $tierPrices[$productTierPrice->getCustomerGroupId()] = $productTierPrice->getValue();
                     continue;
@@ -235,7 +233,7 @@ abstract class ProductWithoutChildren
 
     protected function getRulePrice($groupId, $product)
     {
-        return (double) $this->rule->getRulePrice(
+        return (float) $this->rule->getRulePrice(
             new \DateTime(),
             $this->store->getWebsiteId(),
             $groupId,
@@ -268,8 +266,7 @@ abstract class ProductWithoutChildren
 
                 if ($this->customData[$field][$currencyCode]['default'] >
                     $this->customData[$field][$currencyCode]['group_' . $groupId]) {
-
-                    $this->customData[$field][$currencyCode]['group_'.$groupId.'_original_formated'] =
+                    $this->customData[$field][$currencyCode]['group_' . $groupId . '_original_formated'] =
                         $this->customData[$field][$currencyCode]['default_formated'];
                 }
             } else {
@@ -300,8 +297,7 @@ abstract class ProductWithoutChildren
 
                     if ($this->customData[$field][$currencyCode]['default'] >
                         $this->customData[$field][$currencyCode]['group_' . $groupId]) {
-
-                        $this->customData[$field][$currencyCode]['group_'.$groupId.'_original_formated'] =
+                        $this->customData[$field][$currencyCode]['group_' . $groupId . '_original_formated'] =
                             $this->customData[$field][$currencyCode]['default_formated'];
                     }
                 }

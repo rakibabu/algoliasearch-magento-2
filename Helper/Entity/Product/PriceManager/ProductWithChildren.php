@@ -2,16 +2,8 @@
 
 namespace Algolia\AlgoliaSearch\Helper\Entity\Product\PriceManager;
 
-use Algolia\AlgoliaSearch\Helper\ConfigHelper;
 use Magento\Catalog\Model\Product;
-use Magento\Customer\Model\ResourceModel\Group\CollectionFactory;
-use Magento\Framework\Pricing\PriceCurrencyInterface;
-use Magento\Catalog\Helper\Data as CatalogHelper;
-use Magento\Store\Model\Store;
-use Magento\Tax\Helper\Data as TaxHelper;
-use Magento\Tax\Model\Config as TaxConfig;
 use Magento\Customer\Model\Group;
-use Magento\CatalogRule\Model\ResourceModel\Rule;
 
 abstract class ProductWithChildren extends ProductWithoutChildren
 {
@@ -52,7 +44,6 @@ abstract class ProductWithChildren extends ProductWithoutChildren
             $min = $max;
         }
 
-
         if ($currencyCode !== $this->baseCurrencyCode) {
             $min = $this->convertPrice($min, $currencyCode);
 
@@ -70,7 +61,7 @@ abstract class ProductWithChildren extends ProductWithoutChildren
             return '';
         }
 
-        return $this->formatPrice($min, $currencyCode) .' - '. $this->formatPrice($max, $currencyCode);
+        return $this->formatPrice($min, $currencyCode) . ' - ' . $this->formatPrice($max, $currencyCode);
     }
 
     protected function handleNonEqualMinMaxPrices($field, $currencyCode, $min, $max, $dashedFormat)
@@ -80,9 +71,7 @@ abstract class ProductWithChildren extends ProductWithoutChildren
             $this->customData[$field][$currencyCode]['default_formated'] = $dashedFormat;
 
             //// Do not keep special price that is already taken into account in min max
-            unset($this->customData['price']['special_from_date']);
-            unset($this->customData['price']['special_to_date']);
-            unset($this->customData['price']['default_original_formated']);
+            unset($this->customData['price']['special_from_date'], $this->customData['price']['special_to_date'], $this->customData['price']['default_original_formated']);
 
             $this->customData[$field][$currencyCode]['default'] = 0; // will be reset just after
         }
@@ -93,8 +82,8 @@ abstract class ProductWithChildren extends ProductWithoutChildren
                 $groupId = (int) $group->getData('customer_group_id');
 
                 if ($min !== $max && $min <= $this->customData[$field][$currencyCode]['group_' . $groupId]) {
-                    $this->customData[$field][$currencyCode]['group_'.$groupId] = 0;
-                    $this->customData[$field][$currencyCode]['group_'.$groupId.'_formated'] = $dashedFormat;
+                    $this->customData[$field][$currencyCode]['group_' . $groupId] = 0;
+                    $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] = $dashedFormat;
                 }
             }
         }
@@ -126,10 +115,10 @@ abstract class ProductWithChildren extends ProductWithoutChildren
                 $this->customData[$field][$currencyCode]['group_' . $groupId] = $min;
 
                 if ($min === $max) {
-                    $this->customData[$field][$currencyCode]['group_'.$groupId.'_formated'] =
+                    $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] =
                         $this->customData[$field][$currencyCode]['default_formated'];
                 } else {
-                    $this->customData[$field][$currencyCode]['group_'.$groupId.'_formated'] = $dashedFormat;
+                    $this->customData[$field][$currencyCode]['group_' . $groupId . '_formated'] = $dashedFormat;
                 }
             }
         }

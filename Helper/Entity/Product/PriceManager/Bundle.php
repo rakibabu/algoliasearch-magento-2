@@ -15,7 +15,6 @@ class Bundle extends ProductWithChildren
         $priceModel = $product->getPriceModel();
         list($min, $max) = $priceModel->getTotalPrices($product, null, $withTax, true);
 
-
         if ($currencyCode !== $this->baseCurrencyCode) {
             $min = $this->convertPrice($min, $currencyCode);
 
