@@ -16,7 +16,6 @@ class JobMethods implements \Magento\Framework\Data\OptionSourceInterface
         'rebuildStorePageIndex' => 'Page Reindex',
     ];
 
-
     /** @return array */
     public function toOptionArray()
     {
