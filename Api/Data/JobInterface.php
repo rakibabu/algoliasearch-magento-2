@@ -16,18 +16,6 @@ interface JobInterface
     const STATUS_ERROR = 'error';
     const STATUS_COMPLETE = 'complete';
 
-    const METHODS = [
-        'saveConfigurationToAlgolia' => 'Save Configuration ',
-        'moveIndex' => 'Move Index',
-        'deleteObjects' => 'Object deletion',
-        'rebuildStoreCategoryIndex' => 'Category Reindex',
-        'rebuildStoreProductIndex' => 'Product Reindex',
-        'rebuildProductIndex' => 'Product Reindex',
-        'rebuildStoreAdditionalSectionsIndex' => 'Additional Section Reindex',
-        'rebuildStoreSuggestionIndex' => 'Suggestion Reindex',
-        'rebuildStorePageIndex' => 'Page Reindex',
-    ];
-
     /**#@+
      * Constants for keys of data array. Identical to the name of the getter in snake case
      */
