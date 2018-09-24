@@ -2,7 +2,11 @@ requirejs(['algoliaBundle','Magento_Catalog/js/price-utils'], function(algoliaBu
 	algoliaBundle.$(function ($) {
 
 		/** We have nothing to do here if instantsearch is not enabled **/
-		if (!algoliaConfig.instant.enabled || !(algoliaConfig.isSearchPage || !algoliaConfig.autocomplete.enabled) || (!algoliaConfig.autocomplete.enabled && $(algoliaConfig.autocomplete.selector).length == 0)) {
+		if (!algoliaConfig.instant.enabled || !(algoliaConfig.isSearchPage || !algoliaConfig.autocomplete.enabled)) {
+			return;
+		}
+
+		if (!algoliaConfig.autocomplete.enabled && $(algoliaConfig.autocomplete.selector).length == 0) {
 			return;
 		}
 		
