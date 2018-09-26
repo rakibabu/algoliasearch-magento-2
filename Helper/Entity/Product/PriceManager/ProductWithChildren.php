@@ -97,9 +97,9 @@ abstract class ProductWithChildren extends ProductWithoutChildren
             return;
         }
 
-        if ($currencyCode !== $this->baseCurrencyCode) {
-            $min = $this->convertPrice($min, $currencyCode);
-        }
+        // if ($currencyCode !== $this->baseCurrencyCode) {
+        //     $min = $this->convertPrice($min, $currencyCode);
+        // }
 
         $this->customData[$field][$currencyCode]['default'] = $min;
         $this->customData[$field][$currencyCode]['default_formated'] = $this->formatPrice($min, $currencyCode);
